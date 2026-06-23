@@ -328,13 +328,18 @@ body{
    ADDED — PET SYSTEM (SVG pets, idle anims, auras)
    keeps existing palette + card layout, only adds inside cards
    ============================================================ */
-.pet-svg{width:100%;height:100%;display:block;overflow:visible;}
+.pet-svg{width:100%;height:100%;display:block;overflow:visible;filter:drop-shadow(0 4px 0 rgba(44,44,44,.24));}
+.pet-model-img{width:100%;height:100%;object-fit:contain;display:block;filter:drop-shadow(0 4px 0 rgba(44,44,44,.2));}
 .pet-body{transform-box:fill-box;transform-origin:center;animation:petBreathe 3s ease-in-out infinite;}
 @keyframes petBreathe{0%,100%{transform:scale(1);}50%{transform:scale(1.03);}}
 .pet-tail{transform-box:fill-box;transform-origin:center;animation:petWag .8s ease-in-out infinite alternate;}
 @keyframes petWag{0%{transform:rotate(-8deg);}100%{transform:rotate(8deg);}}
 .pet-eye{transform-box:fill-box;transform-origin:center;transition:transform .12s ease;}
 .pet-eye.blink{transform:scaleY(.1);}
+.pet-model{stroke:#2C2C2C;stroke-width:2.6;stroke-linejoin:round;stroke-linecap:round;}
+.pet-model .pet-shine,.pet-model .pet-facet,.pet-model .pet-blush{stroke:none;}
+.pet-model .pet-eye{stroke:none;}.pet-model .pet-eye circle:first-child{stroke:#2C2C2C;stroke-width:1.4;}
+.pet-feet{stroke:#2C2C2C;stroke-width:2.4;}.pet-cheek{stroke:none;opacity:.34;}
 
 .pet-wrap{position:relative;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:transform .2s ease;}
 .pet-float{width:100%;height:100%;display:flex;align-items:center;justify-content:center;animation:petFloat 2.5s ease-in-out infinite;}
@@ -372,14 +377,16 @@ body{
 }
 .egg-overlay.show{display:flex;}
 .egg-stage{position:relative;width:200px;height:210px;display:flex;align-items:center;justify-content:center;}
+.egg-stage::before{content:'';position:absolute;width:132px;height:26px;bottom:12px;border-radius:50%;background:rgba(0,0,0,.20);filter:blur(2px);animation:eggShadow 1s ease-in-out infinite;}
 .egg-shell{width:150px;height:180px;}
 .egg-svg{width:100%;height:100%;display:block;overflow:visible;}
-.egg-rock{animation:eggRock .3s ease-in-out infinite alternate;}
-@keyframes eggRock{0%{transform:rotate(-5deg);}100%{transform:rotate(5deg);}}
-.egg-shake{animation:eggShake .07s linear infinite;}
-@keyframes eggShake{0%{transform:translateX(-2px);}100%{transform:translateX(2px);}}
-.egg-pop{animation:eggPop .4s ease-out forwards;}
-@keyframes eggPop{to{transform:scale(2);opacity:0;}}
+.egg-rock{animation:eggRock .58s cubic-bezier(.36,.07,.19,.97) infinite;}
+@keyframes eggRock{0%,100%{transform:rotate(-5deg) translateY(0) scale(1)}35%{transform:rotate(5deg) translateY(-5px) scale(1.03,.97)}65%{transform:rotate(-3deg) translateY(0) scale(.98,1.04)}}
+.egg-shake{animation:eggShake .075s linear infinite;}
+@keyframes eggShake{0%,100%{transform:translateX(-3px) rotate(-4deg)}50%{transform:translateX(3px) rotate(4deg)}}
+.egg-pop{animation:eggPop .42s cubic-bezier(.18,.8,.3,1) forwards;}
+@keyframes eggPop{30%{transform:scale(1.18,.82)}100%{transform:scale(2.15) rotate(15deg);opacity:0;}}
+@keyframes eggShadow{0%,100%{transform:scaleX(1);opacity:.25}50%{transform:scaleX(.72);opacity:.12}}
 .crack{fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:80;stroke-dashoffset:80;}
 .crack.go{animation:crackIn 1.4s ease forwards;}
 @keyframes crackIn{to{stroke-dashoffset:0;}}
@@ -538,6 +545,181 @@ body{
 
 /* ---- vibrant factor / callout accents already on-palette ---- */
 .callout{background:#FFEFE2;}
+
+/* ============================================================
+   ADDED — PREMIUM REFINEMENT PASS  (MVP-grade polish)
+   bigger focal phone · calm pro backdrop · depth tokens ·
+   interactivity · dashboard hierarchy · consistency
+   palette + features unchanged
+   ============================================================ */
+:root{
+  --r-sm:12px; --r-md:16px; --r-lg:20px;
+  --sh-1:0 1px 3px rgba(40,33,26,.05), 0 1px 2px rgba(40,33,26,.04);
+  --sh-2:0 6px 16px rgba(40,33,26,.07), 0 2px 5px rgba(40,33,26,.04);
+  --sh-3:0 18px 40px rgba(40,33,26,.11), 0 6px 14px rgba(40,33,26,.06);
+  --ease:cubic-bezier(.4,0,.2,1);
+}
+html{text-rendering:optimizeLegibility;}
+
+/* ---- warm orange backdrop (kept per preference) ---- */
+body{
+  padding:0;min-height:100vh;
+  background:
+    radial-gradient(900px 640px at 78% -12%, #FFD7A6 0%, rgba(255,215,166,0) 58%),
+    linear-gradient(160deg,#FFC07E 0%,#F8964A 46%,#C7A35C 112%);
+}
+.bg-deco .spark{color:rgba(255,255,255,.62);animation:twinkleSoft 5s ease-in-out infinite;}
+.bg-deco .spark.big{color:rgba(255,255,255,.46);}
+@keyframes twinkleSoft{0%,100%{opacity:.28;transform:scale(.9);}50%{opacity:.7;transform:scale(1.05);}}
+
+/* ---- dominant phone: fixed design size, uniformly scaled by JS to
+       fill the viewport so the whole UI grows crisply & proportionally ---- */
+.phone{
+  width:390px;height:820px;
+  max-height:none;
+  transform:scale(var(--scale,1));
+  transform-origin:center center;
+  border-radius:46px;border-width:11px;
+  box-shadow:0 50px 100px rgba(30,40,20,.34), 0 16px 40px rgba(30,40,20,.20);
+}
+
+/* ---- smooth page transitions ---- */
+.screen.active{animation:screenIn .34s var(--ease) both;}
+@keyframes screenIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+
+/* ---- refined top bar + animated stats ---- */
+.statbar{padding:40px 18px 14px;border-bottom:1px solid rgba(40,33,26,.06);}
+.stat.streak,.stat.gems{transition:transform .2s var(--ease);}
+.stat.streak{animation:flameBob 2.8s ease-in-out infinite;}
+@keyframes flameBob{0%,100%{transform:translateY(0);}50%{transform:translateY(-1.5px);}}
+.gem-pop{animation:gemPop .42s var(--ease);}
+@keyframes gemPop{0%{transform:scale(1);}42%{transform:scale(1.16);}100%{transform:scale(1);}}
+.gem-toast{
+  position:absolute;right:22px;top:58px;z-index:130;pointer-events:none;
+  font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#2F6BE0;
+  text-shadow:0 1px 2px rgba(255,255,255,.8);animation:gemToast 1.15s var(--ease) forwards;
+}
+@keyframes gemToast{0%{opacity:0;transform:translateY(8px);}22%{opacity:1;}100%{opacity:0;transform:translateY(-26px);}}
+
+/* ---- DASHBOARD: daily-goal progress card ---- */
+.goal-card{
+  margin:14px 14px 0;background:#fff;border:1px solid rgba(40,33,26,.06);
+  border-radius:var(--r-lg);padding:15px 16px;box-shadow:var(--sh-2);
+}
+.goal-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:11px;}
+.goal-label{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;letter-spacing:-.01em;}
+.goal-val{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.8rem;color:var(--sage-d);}
+.goal-bar{height:12px;border-radius:999px;background:#EEEBE3;overflow:hidden;box-shadow:inset 0 1px 2px rgba(40,33,26,.06);}
+.goal-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--sage),var(--sage-d));width:67%;animation:goalGrow 1.2s var(--ease) both;}
+@keyframes goalGrow{from{width:0;} to{width:67%;}}
+.goal-meta{display:flex;justify-content:space-between;margin-top:10px;font-size:.73rem;font-weight:700;color:#9a958c;}
+.goal-meta .pcent{color:var(--orange-d);}
+
+/* ---- premium cards + tasteful hover lift ---- */
+.lb-row,.settings-row,.chest-card{transition:transform .18s var(--ease),box-shadow .18s var(--ease);}
+.lb-row{box-shadow:var(--sh-1);border-color:rgba(40,33,26,.06);}
+.lb-row:hover{transform:translateY(-2px);box-shadow:var(--sh-2);}
+.settings-row{box-shadow:var(--sh-1);border-color:rgba(40,33,26,.06);}
+.settings-row:hover{transform:translateY(-2px);box-shadow:var(--sh-2);}
+.chest-card{box-shadow:var(--sh-2);}
+.chest-card:hover{transform:translateY(-3px);box-shadow:var(--sh-3);}
+.chest-card:active{transform:translateY(1px);box-shadow:var(--sh-1);}
+.profile-card{box-shadow:0 14px 30px rgba(240,118,42,.26);transition:transform .2s var(--ease),box-shadow .2s var(--ease);}
+.profile-card:hover{transform:translateY(-2px);box-shadow:0 20px 38px rgba(240,118,42,.32);}
+
+/* ---- refined leaderboard avatars + points ---- */
+.lb-avatar{box-shadow:inset 0 0 0 2px rgba(255,255,255,.65), var(--sh-1);}
+.lb-row.me .lb-avatar{box-shadow:inset 0 0 0 2px #fff, 0 0 0 2px var(--orange);}
+
+/* ---- navigation: real-app active indicator + touch feedback ---- */
+.bottomnav{padding:12px 6px 18px;border-top:1px solid rgba(40,33,26,.06);}
+.navbtn{transition:color .2s var(--ease),background .2s var(--ease),transform .14s var(--ease);border-radius:16px;}
+.navbtn:active{transform:scale(.9);}
+.navbtn.active{box-shadow:none;position:relative;}
+.navbtn.active::after{content:'';position:absolute;top:1px;left:50%;transform:translateX(-50%);width:18px;height:4px;border-radius:999px;background:var(--orange);}
+
+/* ---- lesson metadata chips (time · XP · difficulty) ---- */
+.lesson-meta{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 16px;}
+.lmeta{display:inline-flex;align-items:center;gap:5px;font-size:.72rem;font-weight:800;padding:6px 11px;border-radius:999px;background:var(--cream2);color:#6f6a61;border:1px solid rgba(40,33,26,.05);}
+.lmeta.xp{background:#FFF3E9;color:var(--orange-d);border-color:rgba(240,118,42,.12);}
+.lmeta.diff{background:#EAF3E1;color:var(--sage-d);border-color:rgba(126,154,111,.16);}
+
+/* ---- responsive: near full-screen on small devices ---- */
+@media (max-width:520px){
+  .phone{transform:none;width:100vw;height:100vh;border-radius:0;border-width:0;}
+  .notch{display:none;}
+  .bg-deco{display:none;}
+}
+
+/* ============================================================
+   ADDED — PET COACH (lessons guided by collectible pets) +
+   HOME MASCOT (fills empty path space, youth-friendly)
+   ============================================================ */
+.coach{display:flex;gap:11px;align-items:flex-start;margin:2px 0 16px;animation:fadeUp .4s var(--ease) both;}
+.coach-pet{width:64px;height:64px;flex-shrink:0;}
+.coach-bubble{
+  position:relative;flex:1;background:#fff;border:1px solid rgba(40,33,26,.07);
+  border-radius:16px;border-top-left-radius:5px;padding:13px 15px;box-shadow:var(--sh-2);
+  font-size:.9rem;line-height:1.5;color:#4a463f;
+}
+.coach-bubble::before{
+  content:'';position:absolute;left:-7px;top:15px;width:13px;height:13px;background:#fff;
+  border-left:1px solid rgba(40,33,26,.07);border-bottom:1px solid rgba(40,33,26,.07);
+  transform:rotate(45deg);
+}
+.coach-bubble p{margin:0 0 7px;} .coach-bubble p:last-child{margin:0;}
+.coach-bubble b{color:var(--orange-d);}
+.coach-bubble.ok{background:#EEF6E6;border-color:rgba(126,154,111,.3);}
+.coach-bubble.ok::before{background:#EEF6E6;border-color:rgba(126,154,111,.3);}
+.coach-bubble.ok b{color:var(--sage-d);}
+.coach-bubble.no{background:#FFF1E8;border-color:rgba(240,118,42,.22);}
+.coach-bubble.no::before{background:#FFF1E8;border-color:rgba(240,118,42,.22);}
+
+.quiz-kick{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;color:var(--sage-d);margin:4px 0 12px;}
+.quiz-explain{display:none;}
+.quiz-explain.show{display:block;animation:fadeUp .35s var(--ease) both;}
+
+/* home mascot coach + slogan in the empty path area */
+.path-coach{display:flex;align-items:center;gap:11px;margin-top:8px;padding:0 26px;max-width:340px;z-index:1;}
+.pc-pet{width:60px;height:60px;flex-shrink:0;}
+.pc-bubble{
+  position:relative;background:#fff;border:1px solid rgba(40,33,26,.07);border-radius:15px;
+  border-bottom-left-radius:5px;padding:11px 13px;font-size:.82rem;font-weight:700;line-height:1.4;
+  color:#5a554c;box-shadow:var(--sh-2);
+}
+.pc-bubble::before{content:'';position:absolute;left:-6px;bottom:13px;width:12px;height:12px;background:#fff;border-left:1px solid rgba(40,33,26,.07);border-top:1px solid rgba(40,33,26,.07);transform:rotate(-45deg);}
+.path-slogan{margin-top:16px;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.82rem;color:#9b8c6f;letter-spacing:.02em;z-index:1;}
+.path-slogan b{color:var(--orange-d);}
+
+/* path companions + stickers that fill the empty side margins */
+.path-buddy{position:absolute;width:74px;height:74px;z-index:1;pointer-events:none;}
+.bud-left{left:8px;top:15%;}
+.bud-right{right:8px;top:49%;}
+.buddy-tag{
+  position:absolute;left:50%;bottom:-14px;transform:translateX(-50%);white-space:nowrap;
+  font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.58rem;letter-spacing:.03em;
+  color:var(--sage-d);background:#fff;border:1px solid rgba(40,33,26,.07);
+  padding:2px 8px;border-radius:999px;box-shadow:var(--sh-1);
+}
+.path-sticker{position:absolute;z-index:1;pointer-events:none;font-size:1.4rem;
+  filter:drop-shadow(0 3px 4px rgba(0,0,0,.12));animation:petFloat 3.2s ease-in-out infinite;}
+.st-a{left:34px;top:38%;animation-delay:.4s;}
+.st-b{right:42px;top:22%;animation-delay:.9s;}
+.st-c{left:54px;top:64%;animation-delay:1.3s;}
+
+/* 3D coach art: kept separate from the SVG collection so every pet still
+   has a lightweight animated in-app model. */
+.home-foxy-3d{position:absolute;right:-18px;bottom:12px;width:132px;height:176px;object-fit:contain;z-index:1;pointer-events:none;filter:drop-shadow(0 12px 10px rgba(100,66,35,.18));animation:heroFloat 3.4s ease-in-out infinite;}
+@keyframes heroFloat{0%,100%{transform:translateY(0) rotate(1deg)}50%{transform:translateY(-8px) rotate(-1deg)}}
+.coach-pet.hero-model{width:76px;height:76px;border-radius:20px;overflow:hidden;background:linear-gradient(145deg,#FFF4EB,#EAF3E1);box-shadow:0 7px 15px rgba(44,44,44,.12);}
+.coach-pet.hero-model img{width:100%;height:100%;object-fit:contain;transform:scale(1.18) translateY(4px);}
+.lesson-stage{margin:10px 0 16px;padding:15px;border-radius:18px;background:linear-gradient(145deg,#fff,#FFF8F1);border:1px solid rgba(240,118,42,.14);box-shadow:var(--sh-1);}
+.stage-label{font-family:'Baloo 2',sans-serif;font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--orange-d);margin-bottom:8px;}
+.reveal-card,.decision-card{background:#fff;border:2px solid var(--gray);border-radius:15px;padding:15px;text-align:left;width:100%;font:700 .88rem 'Nunito',sans-serif;color:var(--charcoal);cursor:pointer;}
+.reveal-card.open{border-color:var(--sage);background:#F1F7EB;}.reveal-answer{display:none;margin-top:10px;font-size:.84rem;line-height:1.45;color:#5b6553}.reveal-card.open+.reveal-answer{display:block;animation:fadeUp .25s ease both;}
+.slider-readout{display:flex;justify-content:space-between;align-items:center;margin:9px 0;font:800 1.2rem 'Baloo 2',sans-serif;color:var(--orange-d)}
+.range{width:100%;accent-color:var(--orange);}.hint{font-size:.78rem;color:#777168;line-height:1.45}.match-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.match-chip{border:2px solid var(--gray);background:#fff;border-radius:12px;padding:11px 8px;font:800 .75rem 'Nunito',sans-serif;cursor:pointer}.match-chip.selected{border-color:var(--orange);background:#FFF1E8}.match-chip.matched{border-color:var(--sage);background:#EDF5E8;color:var(--sage-d)}
+.summary-list{display:grid;gap:9px;margin:12px 0}.summary-item{background:#fff;border-left:5px solid var(--sage);border-radius:12px;padding:10px 12px;font-size:.83rem;line-height:1.4}.completion-perks{display:flex;justify-content:center;gap:7px;flex-wrap:wrap;margin:0 0 15px}.perk{background:#FFF3E9;color:var(--orange-d);border-radius:999px;padding:6px 9px;font-size:.7rem;font-weight:800}
 </style>
 </head>
 <body>
@@ -564,29 +746,51 @@ body{
       <div class="stat-group">
         <div class="stat streak">🔥 4</div>
         <div class="stat gems" id="gemStat">💎 500</div>
+        <button class="lang-pill home-lang" id="homeLangPill" aria-label="Cambiar a inglés">🌐 ES</button>
       </div>
     </div>
     <div class="unit-header">
       <div>
-        <div class="label">Unit 1</div>
-        <h2>Credit Basics</h2>
-        <p>Use real terms, build confidence</p>
+        <div class="label" id="homeUnit">UNIDAD 1</div>
+        <h2 id="homeTitle">Lo básico del crédito</h2>
+        <p id="homeSub">Usa términos reales, gana confianza</p>
       </div>
       <div class="book-btn">📖</div>
+    </div>
+    <div class="goal-card">
+      <div class="goal-top">
+        <span class="goal-label" id="goalLabel">Meta diaria</span>
+        <span class="goal-val" id="goalVal">2 / 3 lecciones</span>
+      </div>
+      <div class="goal-bar"><div class="goal-fill"></div></div>
+      <div class="goal-meta">
+        <span id="goalStreak">🔥 racha de 4 días</span>
+        <span class="pcent" id="goalPercent">67% completado</span>
+      </div>
     </div>
     <div class="path">
       <span class="blob blob-a"></span>
       <span class="blob blob-b"></span>
+      <span class="path-buddy bud-left" id="budLeft"></span>
+      <span class="path-buddy bud-right" id="budRight"></span>
+      <span class="path-sticker st-a">⭐</span>
+      <span class="path-sticker st-b">🪙</span>
+      <span class="path-sticker st-c">✨</span>
       <div class="node done">📘</div>
       <div class="node done alt">📘</div>
       <div class="node current" id="startNode">
-        <div class="start-bubble">START<span class="start-prog"></span></div>
+        <div class="start-bubble"><span id="startLabel">INICIAR</span><span class="start-prog"></span></div>
         <div class="pulse-ring"></div>
         ⭐
       </div>
       <div class="node locked alt2"><span class="lock">🔒</span></div>
       <div class="node locked"><span class="lock">🔒</span></div>
       <div class="node locked alt"><span class="lock">🔒</span></div>
+      <div class="path-coach">
+        <div class="pc-pet" id="mascotPet"></div>
+        <div class="pc-bubble" id="homeCoach">¡Sigue tu racha! 🔥 Cada lección te acerca a tu libertad financiera.</div>
+      </div>
+      <div class="path-slogan" id="homeSlogan">Aprende jugando · <b>Avanza</b> de verdad</div>
     </div>
   </div>
 
@@ -713,15 +917,60 @@ document.querySelectorAll('.toggle').forEach(function(t){
   t.addEventListener('click', function(){ t.classList.toggle('on'); });
 });
 
+/* ---------- HOME LANGUAGE ---------- */
+var homeLang='es';
+var HOME_COPY={
+  es:{unit:'UNIDAD 1',title:'Lo básico del crédito',sub:'Usa términos reales, gana confianza',goal:'Meta diaria',goalVal:'2 / 3 lecciones',streak:'🔥 racha de 4 días',percent:'67% completado',start:'INICIAR',coach:'¡Sigue tu racha! 🔥 Cada lección te acerca a tu libertad financiera.',slogan:'Aprende jugando · <b>Avanza</b> de verdad'},
+  en:{unit:'UNIT 1',title:'Credit Basics',sub:'Use real terms, build confidence',goal:'Daily goal',goalVal:'2 / 3 lessons',streak:'🔥 4-day streak',percent:'67% complete',start:'START',coach:'Keep your streak going! 🔥 Every lesson brings you closer to financial freedom.',slogan:'Learn by playing · <b>Move forward</b> for real'}
+};
+function renderHomeLanguage(){
+  var c=HOME_COPY[homeLang];
+  document.getElementById('homeUnit').textContent=c.unit;
+  document.getElementById('homeTitle').textContent=c.title;
+  document.getElementById('homeSub').textContent=c.sub;
+  document.getElementById('goalLabel').textContent=c.goal;
+  document.getElementById('goalVal').textContent=c.goalVal;
+  document.getElementById('goalStreak').textContent=c.streak;
+  document.getElementById('goalPercent').textContent=c.percent;
+  document.getElementById('startLabel').textContent=c.start;
+  document.getElementById('homeCoach').textContent=c.coach;
+  document.getElementById('homeSlogan').innerHTML=c.slogan;
+  var pill=document.getElementById('homeLangPill');
+  pill.textContent='🌐 '+(homeLang==='es'?'ES':'EN');
+  pill.setAttribute('aria-label',homeLang==='es'?'Cambiar a inglés':'Switch to Spanish');
+}
+document.getElementById('homeLangPill').addEventListener('click',function(){homeLang=homeLang==='es'?'en':'es';renderHomeLanguage();});
+renderHomeLanguage();
+
 /* ============================================================
    GEMS
    ============================================================ */
 var gems = 500;
 var gemStat = document.getElementById('gemStat');
 var profileSub = document.getElementById('profileSub');
+function animateCount(el, from, to){
+  var dur = 600, t0 = performance.now();
+  (function tick(t){
+    var p = Math.min(1, (t - t0) / dur);
+    var v = Math.round(from + (to - from) * (1 - Math.pow(1 - p, 3))); // ease-out
+    el.textContent = '💎 ' + v;
+    if(p < 1) requestAnimationFrame(tick);
+  })(t0);
+}
+function spawnGemToast(n){
+  var t = document.createElement('div');
+  t.className = 'gem-toast';
+  t.textContent = '+' + n + ' 💎';
+  var phone = document.querySelector('.phone');
+  phone.appendChild(t);
+  setTimeout(function(){ t.remove(); }, 1150);
+}
 function addGems(n){
+  var from = gems;
   gems += n;
-  gemStat.textContent = '💎 ' + gems;
+  if(n > 0) spawnGemToast(n);
+  gemStat.classList.remove('gem-pop'); void gemStat.offsetWidth; gemStat.classList.add('gem-pop');
+  animateCount(gemStat, from, gems);
   profileSub.textContent = '🔥 4-day streak · 💎 ' + gems + ' gems';
 }
 
@@ -834,7 +1083,7 @@ function face(p){
     return s;
   }
   // default
-  var er = p.eyeR || 6.5;
+  var er = p.eyeR || 8;
   s += eye(40,53,er,ec) + eye(60,53,er,ec);
   if(p.bigNose){
     s += '<ellipse cx="50" cy="62" rx="6" ry="7.5" fill="'+(p.noseColor||'#5a5550')+'"/>';
@@ -847,21 +1096,28 @@ function face(p){
 }
 
 function petSVG(p){
+  return '<img class="pet-model-img" src="assets/pets/'+p.id+'.png" alt="'+p.name+'">';
   _uid++; var g='bg'+_uid;
-  var lite=shade(p.body,26), dark=shade(p.body,-24);
+  var lite=shade(p.body,30), dark=shade(p.body,-28), mid=shade(p.body,8);
   var s='<svg class="pet-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">';
   s+='<defs><radialGradient id="'+g+'" cx="40%" cy="30%" r="78%">'
     +'<stop offset="0%" stop-color="'+lite+'"/><stop offset="100%" stop-color="'+dark+'"/></radialGradient></defs>';
+  s+='<g class="pet-model">';
   s+= extras(p);
   s+= tail(p);
   s+= ears(p);
-  s+='<ellipse class="pet-body" cx="50" cy="58" rx="30" ry="29" fill="url(#'+g+')"/>';
-  if(p.belly) s+='<ellipse cx="50" cy="66" rx="16" ry="15" fill="'+p.belly+'" opacity="'+(p.bellyOp||0.95)+'"/>';
+  s+='<ellipse class="pet-feet" cx="37" cy="80" rx="13" ry="9" fill="'+dark+'"/><ellipse class="pet-feet" cx="63" cy="80" rx="13" ry="9" fill="'+dark+'"/>';
+  s+='<ellipse class="pet-body" cx="50" cy="57" rx="33" ry="31" fill="url(#'+g+')"/>';
+  /* chunky faceted patches make the body feel like a collectible toy, not a flat emoji */
+  s+='<path class="pet-facet" d="M24 48 Q36 35 45 32 L40 57 Q30 64 21 60Z" fill="'+lite+'" opacity=".34"/>';
+  s+='<path class="pet-facet" d="M76 48 Q65 39 58 37 L63 61 Q73 67 80 59Z" fill="'+dark+'" opacity=".32"/>';
+  if(p.belly) s+='<ellipse cx="50" cy="68" rx="18" ry="16" fill="'+p.belly+'" opacity="'+(p.bellyOp||0.95)+'"/>';
   if(p.chestStar) s+='<polygon points="50,52 53,60 61,60 55,65 57,73 50,68 43,73 45,65 39,60 47,60" fill="#FFD400" opacity=".9"/>';
-  s+='<ellipse class="pet-shine" cx="38" cy="44" rx="11" ry="8" fill="#fff" opacity="0.3"/>';
+  s+='<ellipse class="pet-shine" cx="36" cy="42" rx="12" ry="9" fill="#fff" opacity="0.34"/>';
+  s+='<ellipse class="pet-cheek" cx="31" cy="65" rx="6" ry="3" fill="#FF8C8C"/><ellipse class="pet-cheek" cx="69" cy="65" rx="6" ry="3" fill="#FF8C8C"/>';
   s+= face(p);
   s+= accessory(p);
-  s+='</svg>';
+  s+='</g></svg>';
   return s;
 }
 
@@ -977,9 +1233,12 @@ function eggSVG(tier){
   var s='<svg class="egg-svg" viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">';
   s+='<defs><radialGradient id="eggrad" cx="40%" cy="28%" r="80%">'
     +'<stop offset="0%" stop-color="'+c.light+'"/><stop offset="100%" stop-color="'+c.base+'"/></radialGradient></defs>';
-  s+='<ellipse cx="50" cy="64" rx="36" ry="46" fill="url(#eggrad)"/>';
+  s+='<ellipse cx="50" cy="108" rx="31" ry="5" fill="#2C2C2C" opacity=".18" stroke="none"/>';
+  s+='<ellipse cx="50" cy="64" rx="36" ry="46" fill="url(#eggrad)" stroke="#2C2C2C" stroke-width="3.4"/>';
+  s+='<path d="M22 50 Q38 31 50 25 L44 64 Q31 75 18 67Z" fill="'+c.light+'" opacity=".35" stroke="none"/>';
+  s+='<path d="M78 51 Q65 37 57 35 L62 78 Q75 82 83 66Z" fill="'+c.base+'" opacity=".34" stroke="none"/>';
   var sp=[[40,40],[60,46],[34,64],[66,70],[50,86],[44,56],[58,30],[30,50],[70,58],[52,102]];
-  sp.forEach(function(d){ s+='<circle cx="'+d[0]+'" cy="'+d[1]+'" r="'+(2+Math.random()*1.6).toFixed(1)+'" fill="'+c.speck+'" opacity=".8"/>'; });
+  sp.forEach(function(d){ s+='<circle cx="'+d[0]+'" cy="'+d[1]+'" r="'+(2+Math.random()*1.6).toFixed(1)+'" fill="'+c.speck+'" opacity=".8" stroke="#2C2C2C" stroke-width=".7"/>'; });
   s+='<ellipse cx="38" cy="42" rx="9" ry="13" fill="#fff" opacity="0.32"/>';
   if(tier==='legendary') s+='<ellipse cx="50" cy="64" rx="36" ry="46" fill="#fff" opacity="0.12"/>';
   // crack lines (animated later)
@@ -1098,134 +1357,240 @@ if(rewardClose) rewardClose.addEventListener('click', function(){ document.getEl
 var LESSON = {
   es:{
     kicker:'Unidad 1 · Lo Básico del Crédito',
-    s1title:'¿Qué es un puntaje de crédito?',
-    s1para:'Es un número entre 300 y 850 que les dice a los prestamistas qué tan confiable eres para pagar el dinero. Mientras más alto sea tu puntaje, más fácil será conseguir préstamos, apartamentos y mejores tasas de interés.',
-    s1callout:'Muchas familias latinas empiezan desde cero en EE. UU. — <b>eso es normal</b>. Solo el <b>39% de los hispanos</b> en EE. UU. tiene educación financiera. Avanza lo cambia.',
-    s2title:'Los 5 Factores',
-    factors:[
-      ['35%','Historial de Pagos','Pagar a tiempo es lo más importante.'],
-      ['30%','Uso del Crédito','Cuánto de tu límite usas.'],
-      ['15%','Antigüedad del Crédito','Hace cuánto tienes crédito.'],
-      ['10%','Tipos de Crédito','La variedad de cuentas que manejas.'],
-      ['10%','Crédito Nuevo','Cuentas abiertas recientemente.']
-    ],
-    quizTitle:'Pon a prueba lo que sabes',
-    quizQ:'María paga a tiempo pero tiene $800 en una tarjeta con límite de $1,000. ¿Cuál es su mayor problema?',
-    quizOpts:['Paga a tiempo','Uso del crédito muy alto: 80%','Tiene demasiadas tarjetas','Su puntaje está bien'],
-    quizFb:'¡Correcto! Mantén el uso del crédito por debajo del 30%.',
-    cont:'Continuar',
-    next:'Siguiente',
-    doneTitle:'¡Lección Completada!',
-    doneSub:'Ganaste',
-    contLearn:'Seguir Aprendiendo',
-    replay:'Repetir'
+    mTime:'6 min', mXp:'+90 XP', mDiff:'🟢 Principiante',
+    cont:'Continuar', next:'Siguiente', quizKick:'Pon a prueba lo que sabes',
+    doneTitle:'¡Lección Completada!', doneSub:'Ganaste',
+    contLearn:'Seguir Aprendiendo', replay:'Repetir',
+    steps:[
+      {type:'teach', pet:'foxy', title:'¿Qué es un puntaje de crédito?',
+        lines:['¡Hola! Soy <b>Foxy</b> 🦊 y te acompaño hoy.',
+               'Tu puntaje de crédito es un número entre <b>300 y 850</b>.',
+               'Les dice a los bancos qué tan confiable eres para pagar dinero prestado.'],
+        callout:'Muchas familias latinas empiezan desde cero — <b>eso es normal</b>. Solo el <b>39% de los hispanos</b> tiene educación financiera. ¡Avanza lo cambia!'},
+      {type:'teach', pet:'bunny', title:'Los 5 Factores',
+        lines:['🐰 Tu puntaje se arma con <b>5 ingredientes</b>.','¡El más importante es pagar a tiempo!'],
+        factors:[
+          ['35%','Historial de Pagos','Pagar a tiempo es lo más importante.'],
+          ['30%','Uso del Crédito','Cuánto de tu límite usas.'],
+          ['15%','Antigüedad','Hace cuánto tienes crédito.'],
+          ['10%','Tipos de Crédito','La variedad de cuentas que manejas.'],
+          ['10%','Crédito Nuevo','Cuentas abiertas recientemente.']
+        ]},
+      {type:'quiz', pet:'koa',
+        q:'María paga a tiempo pero usa $800 de un límite de $1,000. ¿Cuál es su mayor problema?',
+        opts:[{t:'Paga a tiempo'},{t:'Uso del crédito muy alto: 80%',correct:true},{t:'Tiene demasiadas tarjetas'},{t:'Su puntaje está bien'}],
+        good:'¡Exacto! 🐨 Usar el 80% es demasiado. Mantén tu uso <b>por debajo del 30%</b>.',
+        bad:'¡Casi! 🐨 El problema es el uso del crédito: 80% es muy alto. Apunta a <b>menos del 30%</b>.'},
+      {type:'teach', pet:'rana', title:'Tip rápido',
+        lines:['🐸 Dato curioso: pagar a tiempo es el <b>35%</b> de tu puntaje.','Activa <b>pagos automáticos</b> para no olvidar nunca un pago.']},
+      {type:'quiz', pet:'foxy',
+        q:'¿Cuál factor pesa MÁS en tu puntaje de crédito?',
+        opts:[{t:'Historial de pagos (35%)',correct:true},{t:'Crédito nuevo (10%)'},{t:'Tipos de crédito (10%)'},{t:'Antigüedad (15%)'}],
+        good:'¡Correcto! 🦊 El historial de pagos es el rey 👑 con un 35%.',
+        bad:'¡Uy! 🦊 El que más pesa es el <b>historial de pagos</b> (35%). ¡Paga siempre a tiempo!'},
+      {type:'quiz', pet:'bunny',
+        q:'¿Cuánto de tu límite de crédito deberías usar como máximo?',
+        opts:[{t:'80%'},{t:'50%'},{t:'30% o menos',correct:true},{t:'100%'}],
+        good:'¡Sí! 🐰 Usar <b>30% o menos</b> mantiene tu puntaje saludable. 🟢',
+        bad:'¡Casi! 🐰 Lo ideal es usar <b>30% o menos</b> de tu límite.'},
+      {type:'teach', pet:'rey', title:'¡Lo lograste!',
+        lines:['🦁 ¡Trabajo increíble!','Ya entiendes lo básico del crédito.','Sigue tu racha y construye un futuro sólido. 💪']}
+    ]
   },
   en:{
     kicker:'Unit 1 · Credit Basics',
-    s1title:'What is a credit score?',
-    s1para:'It is a number between 300 and 850 that tells lenders how reliably you repay money. The higher your score, the easier it is to get loans, apartments, and lower interest rates.',
-    s1callout:'Many Latino families start from zero in the US — <b>that’s normal</b>. Only <b>39% of Hispanic Americans</b> are financially literate. Avanza changes that.',
-    s2title:'The 5 Factors',
-    factors:[
-      ['35%','Payment History','Paying on time matters most.'],
-      ['30%','Credit Utilization','How much of your limit you use.'],
-      ['15%','Length of History','How long you have had credit.'],
-      ['10%','Credit Mix','The variety of accounts you manage.'],
-      ['10%','New Credit','Recently opened accounts.']
-    ],
-    quizTitle:'Test what you know',
-    quizQ:'Maria pays on time but has $800 on a $1,000 limit card. What is her biggest problem?',
-    quizOpts:['She pays on time','Credit utilization too high at 80%','She has too many cards','Her score is fine'],
-    quizFb:'Correct! Keep your credit utilization under 30%.',
-    cont:'Continue',
-    next:'Next',
-    doneTitle:'Lesson Complete!',
-    doneSub:'You earned',
-    contLearn:'Continue Learning',
-    replay:'Replay'
+    mTime:'6 min', mXp:'+90 XP', mDiff:'🟢 Beginner',
+    cont:'Continue', next:'Next', quizKick:'Test what you know',
+    doneTitle:'Lesson Complete!', doneSub:'You earned',
+    contLearn:'Continue Learning', replay:'Replay',
+    steps:[
+      {type:'teach', pet:'foxy', title:'What is a credit score?',
+        lines:['Hi! I am <b>Foxy</b> 🦊 and I will guide you today.',
+               'Your credit score is a number between <b>300 and 850</b>.',
+               'It tells banks how reliably you repay money you borrow.'],
+        callout:'Many Latino families start from zero — <b>that is normal</b>. Only <b>39% of Hispanic Americans</b> are financially literate. Avanza changes that!'},
+      {type:'teach', pet:'bunny', title:'The 5 Factors',
+        lines:['🐰 Your score is built from <b>5 ingredients</b>.','The most important one is paying on time!'],
+        factors:[
+          ['35%','Payment History','Paying on time matters most.'],
+          ['30%','Credit Utilization','How much of your limit you use.'],
+          ['15%','Length of History','How long you have had credit.'],
+          ['10%','Credit Mix','The variety of accounts you manage.'],
+          ['10%','New Credit','Recently opened accounts.']
+        ]},
+      {type:'quiz', pet:'koa',
+        q:'Maria pays on time but uses $800 of a $1,000 limit. What is her biggest problem?',
+        opts:[{t:'She pays on time'},{t:'Credit utilization too high at 80%',correct:true},{t:'She has too many cards'},{t:'Her score is fine'}],
+        good:'Exactly! 🐨 Using 80% is too much. Keep your utilization <b>under 30%</b>.',
+        bad:'So close! 🐨 The issue is utilization: 80% is too high. Aim for <b>under 30%</b>.'},
+      {type:'teach', pet:'rana', title:'Quick tip',
+        lines:['🐸 Fun fact: paying on time is <b>35%</b> of your score.','Turn on <b>autopay</b> so you never miss a payment.']},
+      {type:'quiz', pet:'foxy',
+        q:'Which factor weighs the MOST in your credit score?',
+        opts:[{t:'Payment history (35%)',correct:true},{t:'New credit (10%)'},{t:'Credit mix (10%)'},{t:'Length of history (15%)'}],
+        good:'Correct! 🦊 Payment history is king 👑 at 35%.',
+        bad:'Oops! 🦊 The heaviest factor is <b>payment history</b> (35%). Always pay on time!'},
+      {type:'quiz', pet:'bunny',
+        q:'How much of your credit limit should you use at most?',
+        opts:[{t:'80%'},{t:'50%'},{t:'30% or less',correct:true},{t:'100%'}],
+        good:'Yes! 🐰 Using <b>30% or less</b> keeps your score healthy. 🟢',
+        bad:'Close! 🐰 The sweet spot is using <b>30% or less</b> of your limit.'},
+      {type:'teach', pet:'rey', title:'You did it!',
+        lines:['🦁 Amazing work!','You now understand the basics of credit.','Keep your streak going and build a strong future. 💪']}
+    ]
   }
 };
 var FACTOR_COLORS = ['var(--orange)','var(--sage)','#F0B429','#5B6CE0','#E07AB0'];
+
+/* A reusable micro-course format. It deliberately alternates explanation and
+   doing, so the lesson earns its 2–4 minute promise instead of becoming a
+   longer slideshow. */
+var COURSE = {
+  es:{kicker:'Unidad 1 · Crédito básico',mTime:'3 min',mXp:'+180 XP',mDiff:'🟢 Principiante',cont:'Continuar',next:'Siguiente',quizKick:'Comprueba tu idea',doneTitle:'¡Curso completado!',doneSub:'Ganaste',contLearn:'Seguir aprendiendo',replay:'Repetir',steps:[
+    {type:'reveal',pet:'foxy',title:'Tu crédito abre puertas',prompt:'Toca para descubrir por qué importa antes de pedir dinero.',reveal:'Un buen puntaje puede ayudarte a pagar menos por un auto, un apartamento o una tarjeta.',reward:true},
+    {type:'decision',pet:'bunny',title:'Una decisión real',q:'Sofía quiere comprar una laptop de $900. ¿Qué la ayuda más?',opts:[{t:'Revisar su límite y plan de pago',correct:true},{t:'Usar toda su tarjeta sin mirar el saldo'},{t:'Abrir tres tarjetas hoy'}],good:'¡Exacto! Un plan protege tu dinero y tu puntaje.',bad:'Primero revisa el límite y cómo pagarás. Ese es el hábito ganador.',reward:true},
+    {type:'teach',pet:'koa',title:'El número detrás de la confianza',lines:['Tu puntaje va de <b>300 a 850</b>.','No es una nota sobre ti: es una señal de cómo manejas crédito.','Los prestamistas lo usan para decidir condiciones.'],callout:'Empezar desde cero es normal. Los hábitos pequeños construyen historial.'},
+    {type:'teach',pet:'rana',title:'Los cinco ingredientes',lines:['Tu puntaje se prepara con <b>5 factores</b>.','Hoy dominarás los dos que más pesan.'],factors:[['35%','Historial de pagos','Paga cada cuenta a tiempo.'],['30%','Uso del crédito','No ocupes todo tu límite.'],['15%','Antigüedad','Las cuentas viejas ayudan.'],['10%','Mezcla','Distintos tipos de crédito.'],['10%','Crédito nuevo','Abrir mucho de golpe puede bajar el puntaje.']]},
+    {type:'slider',pet:'foxy',title:'Prueba el uso de crédito',q:'Una tarjeta con límite de $1,000 tiene este saldo:',min:0,max:1000,value:800,target:300,tip:'Intenta bajar el saldo a $300 o menos: es 30% del límite.',reward:true},
+    {type:'match',pet:'luna',title:'Empareja el hábito',left:['Pagar puntual','Usar poco límite','Abrir cuentas'],right:['Protege pagos','Mejora utilización','Hazlo con calma'],pairs:[0,1,2],reward:true},
+    {type:'calc',pet:'bruno',title:'Mini calculadora',q:'Tu límite es $2,000 y debes $500. ¿Cuál es tu uso?',opts:[{t:'25%',correct:true},{t:'50%'},{t:'75%'},{t:'100%'}],good:'¡Sí! $500 ÷ $2,000 = 25%. Está debajo de 30%.',bad:'Divide saldo entre límite: 500 ÷ 2,000 = 25%.',reward:true},
+    {type:'quiz',pet:'mariposa',q:'¿Qué pesa más en un puntaje de crédito?',opts:[{t:'Historial de pagos (35%)',correct:true},{t:'Crédito nuevo (10%)'},{t:'Mezcla de crédito (10%)'},{t:'Antigüedad (15%)'}],good:'¡Correcto! Pagar puntual es el factor más grande.',bad:'El historial de pagos pesa 35%.',reward:true},
+    {type:'quiz',pet:'rey',q:'Si no puedes pagar todo este mes, ¿qué opción es mejor?',opts:[{t:'Ignorar el pago'},{t:'Pagar al menos el mínimo a tiempo',correct:true},{t:'Cerrar la cuenta de inmediato'},{t:'Usar otra tarjeta sin plan'}],good:'¡Bien pensado! Pagar a tiempo evita daño al historial.',bad:'Pagar al menos el mínimo a tiempo es mejor que faltar.',reward:true},
+    {type:'summary',pet:'foxy',title:'Tu plan para esta semana',items:['Paga cada cuenta antes de la fecha límite.','Mantén el uso de cada tarjeta en 30% o menos.','Revisa saldo y límite antes de comprar.'],reward:true},
+    {type:'quiz',pet:'estrella',q:'Último reto: límite $600, saldo $120. ¿Tu uso está saludable?',opts:[{t:'Sí, es 20%',correct:true},{t:'No, es 80%'},{t:'No se puede saber'},{t:'Sí, es 60%'}],good:'¡Lo lograste! 120 ÷ 600 = 20%, excelente uso.',bad:'120 ÷ 600 = 20%, que está debajo de 30%.',reward:true}
+  ]},
+  en:{kicker:'Unit 1 · Credit basics',mTime:'3 min',mXp:'+180 XP',mDiff:'🟢 Beginner',cont:'Continue',next:'Next',quizKick:'Check your thinking',doneTitle:'Course complete!',doneSub:'You earned',contLearn:'Keep learning',replay:'Replay',steps:[
+    {type:'reveal',pet:'foxy',title:'Credit opens doors',prompt:'Tap to see why this matters before you borrow money.',reveal:'A strong score can help you pay less for a car, apartment, or card.',reward:true},
+    {type:'decision',pet:'bunny',title:'A real decision',q:'Sofia wants a $900 laptop. What helps her most?',opts:[{t:'Check her limit and payment plan',correct:true},{t:'Use her whole card without checking'},{t:'Open three cards today'}],good:'Exactly! A plan protects your money and your score.',bad:'First check the limit and how you will pay it back.',reward:true},
+    {type:'teach',pet:'koa',title:'The number behind trust',lines:['Your score ranges from <b>300 to 850</b>.','It is not a grade on you—it is a signal of how you handle credit.','Lenders use it to set terms.'],callout:'Starting from zero is normal. Small habits build history.'},
+    {type:'teach',pet:'rana',title:'The five ingredients',lines:['Your score is built from <b>5 factors</b>.','Today you will master the two that matter most.'],factors:[['35%','Payment history','Pay every bill on time.'],['30%','Credit utilization','Do not use all of your limit.'],['15%','Length','Older accounts can help.'],['10%','Mix','Different kinds of credit.'],['10%','New credit','Opening lots at once can hurt.']]},
+    {type:'slider',pet:'foxy',title:'Try credit utilization',q:'A card with a $1,000 limit has this balance:',min:0,max:1000,value:800,target:300,tip:'Lower the balance to $300 or less: that is 30% of the limit.',reward:true},
+    {type:'match',pet:'luna',title:'Match the habit',left:['Pay on time','Use less limit','Open accounts'],right:['Protect payments','Improve utilization','Do it slowly'],pairs:[0,1,2],reward:true},
+    {type:'calc',pet:'bruno',title:'Mini calculator',q:'Your limit is $2,000 and you owe $500. What is your utilization?',opts:[{t:'25%',correct:true},{t:'50%'},{t:'75%'},{t:'100%'}],good:'Yes! $500 ÷ $2,000 = 25%. That is under 30%.',bad:'Divide balance by limit: 500 ÷ 2,000 = 25%.',reward:true},
+    {type:'quiz',pet:'mariposa',q:'Which factor weighs the most in a credit score?',opts:[{t:'Payment history (35%)',correct:true},{t:'New credit (10%)'},{t:'Credit mix (10%)'},{t:'Length (15%)'}],good:'Correct! Paying on time is the biggest factor.',bad:'Payment history weighs 35%.',reward:true},
+    {type:'quiz',pet:'rey',q:'If you cannot pay everything this month, which is best?',opts:[{t:'Ignore the payment'},{t:'Pay at least the minimum on time',correct:true},{t:'Close the account immediately'},{t:'Use another card without a plan'}],good:'Good call! Paying on time protects your history.',bad:'Paying at least the minimum on time is better than missing it.',reward:true},
+    {type:'summary',pet:'foxy',title:'Your plan for this week',items:['Pay every bill before its due date.','Keep each card at 30% of its limit or less.','Check your balance and limit before buying.'],reward:true},
+    {type:'quiz',pet:'estrella',q:'Final challenge: $600 limit, $120 balance. Is that healthy utilization?',opts:[{t:'Yes, it is 20%',correct:true},{t:'No, it is 80%'},{t:'You cannot tell'},{t:'Yes, it is 60%'}],good:'You got it! 120 ÷ 600 = 20%, excellent utilization.',bad:'120 ÷ 600 = 20%, which is below 30%.',reward:true}
+  ]}
+};
 
 var lessonOverlay = document.getElementById('lessonOverlay');
 var lessonBody    = document.getElementById('lessonBody');
 var progFill      = document.getElementById('progFill');
 var langPill      = document.getElementById('langPill');
-var lang='es', step=1, awardedRun={}, quizAnswered=false, lessonEverDone=false;
+var lang='es', stepIdx=0, awardedRun={}, answered={}, lessonEverDone=false;
 
 function openLesson(){
-  lang='es'; step=1; awardedRun={}; quizAnswered=false;
+  lang='es'; stepIdx=0; awardedRun={}; answered={}; selectedMatch={left:null,right:null,done:{}};
   langPill.textContent='🌐 ES';
   lessonOverlay.classList.add('show');
   renderLesson();
 }
 function closeLesson(){ lessonOverlay.classList.remove('show'); }
 
-function awardStep(n){
-  if(awardedRun[n]) return;
-  awardedRun[n]=true;
-  addGems(30);
-}
+function award(idx){ if(awardedRun[idx]) return; awardedRun[idx]=true; addGems(30); }
 function runGems(){ return Object.keys(awardedRun).length*30; }
 
+/* a guiding pet + speech bubble */
+function coach(petId, inner, cls){
+  var p = PET_BY_ID[petId] || PETS[0];
+  return '<div class="coach"><div class="coach-pet">'+petWrapHTML(p,0)+'</div>'
+       + '<div class="coach-bubble '+(cls||'')+'">'+inner+'</div></div>';
+}
+function explainHTML(s, ok){
+  return coach(s.pet, ok ? s.good : s.bad, ok ? 'ok' : 'no');
+}
+
 function renderLesson(){
-  var d=LESSON[lang];
-  progFill.style.width=(step*25)+'%';
-  quizAnswered = quizAnswered && step===3 ? quizAnswered : (step===3?quizAnswered:false);
-  var h='';
-  if(step===1){
-    h += '<div class="lkick">'+d.kicker+'</div>';
-    h += '<h2 class="lesson-h">'+d.s1title+'</h2>';
-    h += '<p class="lesson-p">'+d.s1para+'</p>';
-    h += '<div class="callout">'+d.s1callout+'</div>';
-    h += '<button class="lesson-btn" data-act="next">'+d.cont+'  +30 💎</button>';
-  } else if(step===2){
-    h += '<div class="lkick">'+d.kicker+'</div>';
-    h += '<h2 class="lesson-h">'+d.s2title+'</h2>';
-    d.factors.forEach(function(f,i){
-      h += '<div class="factor"><div class="pct" style="background:'+FACTOR_COLORS[i]+'">'+f[0]+'</div>'
-         + '<div><div class="ftit">'+f[1]+'</div><div class="fdesc">'+f[2]+'</div></div></div>';
+  var d=COURSE[lang], steps=d.steps, total=steps.length;
+  if(stepIdx>=total){ renderDone(d); return; }
+  var s=steps[stepIdx];
+  progFill.style.width=Math.round((stepIdx+1)/(total+1)*100)+'%';
+  var h='<div class="lkick">'+d.kicker+'</div>';
+  if(stepIdx===0){
+    h += '<div class="lesson-meta"><span class="lmeta">⏱ '+d.mTime+'</span><span class="lmeta xp">⭐ '+d.mXp+'</span><span class="lmeta diff">'+d.mDiff+'</span></div>';
+  }
+  if(['reveal','slider','match','decision','calc','summary'].indexOf(s.type)>-1){ renderInteractive(d,s,h); return; }
+  if(s.type==='teach'){
+    h += '<h2 class="lesson-h">'+s.title+'</h2>';
+    h += coach(s.pet, s.lines.map(function(l){return '<p>'+l+'</p>';}).join(''));
+    if(s.factors){
+      s.factors.forEach(function(f,i){
+        h += '<div class="factor"><div class="pct" style="background:'+FACTOR_COLORS[i]+'">'+f[0]+'</div>'
+           + '<div><div class="ftit">'+f[1]+'</div><div class="fdesc">'+f[2]+'</div></div></div>';
+      });
+    }
+    if(s.callout){ h += '<div class="callout">'+s.callout+'</div>'; }
+    h += '<button class="lesson-btn" data-act="next">'+d.cont+'</button>';
+  } else { // quiz
+    h += '<div class="quiz-kick">'+d.quizKick+'</div>';
+    h += coach(s.pet, '<p>'+s.q+'</p>');
+    s.opts.forEach(function(o,i){
+      h += '<button class="quiz-opt" data-opt="'+i+'"'+(o.correct?' data-correct="1"':'')+'>'+o.t+'</button>';
     });
-    h += '<button class="lesson-btn" data-act="next">'+d.cont+'  +30 💎</button>';
-  } else if(step===3){
-    h += '<div class="lkick">'+d.quizTitle+'</div>';
-    h += '<div class="quiz-q">'+d.quizQ+'</div>';
-    d.quizOpts.forEach(function(o,i){
-      h += '<button class="quiz-opt" data-opt="'+i+'"'+(i===1?' data-correct="1"':'')+'>'+o+'</button>';
-    });
-    h += '<div class="quiz-fb" id="quizFb"></div>';
-    h += '<button class="lesson-btn" id="quizNext" data-act="next" disabled>'+d.next+'</button>';
-  } else {
-    h += '<div class="complete-wrap" id="completeWrap">';
-    h += '<div class="complete-circle">⭐</div>';
-    h += '<h2>'+d.doneTitle+'</h2>';
-    h += '<div class="csub">'+d.doneSub+'</div>';
-    h += '<div class="gem-badge-gold">+'+runGems()+' 💎</div><br>';
-    h += '<button class="lesson-btn" data-act="home">'+d.contLearn+'</button>';
-    h += '<button class="lesson-btn sage" data-act="replay">'+d.replay+'</button>';
-    h += '</div>';
+    h += '<div class="quiz-explain" id="quizExplain"></div>';
+    h += '<button class="lesson-btn" id="quizNext" data-act="next" disabled>'+d.next+'  +30 💎</button>';
   }
   lessonBody.innerHTML=h;
   lessonBody.scrollTop=0;
-
-  if(step===3 && quizAnswered) restoreQuizState();
-  if(step===4){
-    completeUnlock();
-    setTimeout(function(){
-      var cw=document.getElementById('completeWrap');
-      if(cw) burst(cw,'legendary');
-    }, 250);
-  }
+  if(s.type==='quiz' && answered[stepIdx]) restoreQuiz(s);
+  startBlink();
 }
 
-function restoreQuizState(){
-  // keep highlight when toggling language after answering
-  var fb=document.getElementById('quizFb');
+function renderInteractive(d,s,h){
+  h += '<h2 class="lesson-h">'+s.title+'</h2>';
+  if(s.type==='reveal'){
+    h += coach(s.pet,'<p>'+s.prompt+'</p>')+'<div class="lesson-stage"><button class="reveal-card" data-interact="reveal">✨ '+s.prompt+'</button><div class="reveal-answer">'+s.reveal+'</div></div><button class="lesson-btn" data-act="next" disabled>'+d.cont+'</button>';
+  } else if(s.type==='slider'){
+    h += coach(s.pet,'<p>'+s.q+'</p>')+'<div class="lesson-stage"><div class="slider-readout"><span id="sliderVal">$'+s.value+'</span><span id="sliderPct">'+Math.round(s.value/s.max*100)+'%</span></div><input class="range" id="creditSlider" type="range" min="'+s.min+'" max="'+s.max+'" value="'+s.value+'" step="25"><p class="hint">'+s.tip+'</p></div><button class="lesson-btn" data-act="next" disabled>'+d.cont+'</button>';
+  } else if(s.type==='match'){
+    h += coach(s.pet,'<p>'+(lang==='es'?'Selecciona un hábito y luego su resultado.':'Choose a habit, then its outcome.')+'</p>')+'<div class="lesson-stage"><div class="match-grid" id="matchGrid">';
+    s.left.forEach(function(v,i){h+='<button class="match-chip" data-side="left" data-i="'+i+'">'+v+'</button>';});
+    s.right.forEach(function(v,i){h+='<button class="match-chip" data-side="right" data-i="'+i+'">'+v+'</button>';});
+    h += '</div><p class="hint" id="matchHint">0 / '+s.left.length+'</p></div><button class="lesson-btn" data-act="next" disabled>'+d.cont+'</button>';
+  } else if(s.type==='summary'){
+    h += coach(s.pet,'<p>'+(lang==='es'?'Guarda estas tres ideas y úsalas en tu próxima compra.':'Save these three ideas and use them on your next purchase.')+'</p>')+'<div class="summary-list">'+s.items.map(function(x){return '<div class="summary-item">✓ '+x+'</div>';}).join('')+'</div><button class="lesson-btn" data-act="next">'+d.cont+'</button>';
+  } else {
+    h += '<div class="quiz-kick">'+d.quizKick+'</div>'+coach(s.pet,'<p>'+s.q+'</p>');
+    s.opts.forEach(function(o,i){h+='<button class="quiz-opt" data-opt="'+i+'"'+(o.correct?' data-correct="1"':'')+'>'+o.t+'</button>';});
+    h += '<div class="quiz-explain" id="quizExplain"></div><button class="lesson-btn" id="quizNext" data-act="next" disabled>'+d.next+'</button>';
+  }
+  lessonBody.innerHTML=h; lessonBody.scrollTop=0;
+  /* Decision and calculator stages use quiz controls too; restoring them here
+     means a language swap always redraws their question, choices, and feedback. */
+  if((s.type==='decision'||s.type==='calc') && answered[stepIdx]) restoreQuiz(s);
+  startBlink();
+}
+
+function renderDone(d){
+  progFill.style.width='100%';
+  var h='<div class="complete-wrap" id="completeWrap">'
+    + '<div class="complete-circle">⭐</div>'
+    + '<h2>'+d.doneTitle+'</h2>'
+    + '<div class="csub">'+d.doneSub+'</div>'
+    + '<div class="gem-badge-gold">+'+runGems()+' 💎</div><br>'
+    + '<div class="completion-perks"><span class="perk">⭐ +180 XP</span><span class="perk">🔥 streak protected</span><span class="perk">🏅 Credit starter</span></div>'
+    + coach('foxy','<p>¡Estoy orgulloso de ti! Tu próximo hábito empieza hoy.</p>','ok')
+    + '<button class="lesson-btn" data-act="home">'+d.contLearn+'</button>'
+    + '<button class="lesson-btn sage" data-act="replay">'+d.replay+'</button>'
+    + '</div>';
+  lessonBody.innerHTML=h;
+  lessonBody.scrollTop=0;
+  completeUnlock();
+  setTimeout(function(){ var cw=document.getElementById('completeWrap'); if(cw) burst(cw,'legendary'); }, 250);
+}
+
+/* re-apply an answered quiz (e.g. after a language toggle) */
+function restoreQuiz(s){
+  var a=answered[stepIdx];
   document.querySelectorAll('.quiz-opt').forEach(function(b){
+    var i=+b.getAttribute('data-opt');
     if(b.getAttribute('data-correct')) b.classList.add('correct');
+    else if(i===a.pick) b.classList.add('wrong');
   });
-  fb.textContent=LESSON[lang].quizFb; fb.classList.add('show','ok');
-  document.getElementById('quizNext').removeAttribute('disabled');
+  var ex=document.getElementById('quizExplain');
+  ex.innerHTML=explainHTML(s, a.correct); ex.classList.add('show');
+  var qn=document.getElementById('quizNext'); if(qn) qn.removeAttribute('disabled');
 }
 
 function completeUnlock(){
@@ -1244,32 +1609,49 @@ function completeUnlock(){
 /* lesson interactions (delegated) */
 lessonBody.addEventListener('click', function(e){
   var opt=e.target.closest('.quiz-opt');
-  if(opt && !quizAnswered){
-    quizAnswered=true;
-    var correct = opt.getAttribute('data-correct');
-    if(correct){ opt.classList.add('correct'); }
+  if(opt && !answered[stepIdx]){
+    var i=+opt.getAttribute('data-opt');
+    var isCorrect=!!opt.getAttribute('data-correct');
+    answered[stepIdx]={pick:i, correct:isCorrect};
+    if(isCorrect){ opt.classList.add('correct'); }
     else {
       opt.classList.add('wrong');
       var right=lessonBody.querySelector('.quiz-opt[data-correct]');
       if(right) right.classList.add('correct');
     }
-    var fb=document.getElementById('quizFb');
-    fb.textContent=LESSON[lang].quizFb; fb.classList.add('show','ok');
-    awardStep(3);
+    var s=COURSE[lang].steps[stepIdx];
+    var ex=document.getElementById('quizExplain');
+    ex.innerHTML=explainHTML(s, isCorrect); ex.classList.add('show');
+    award(stepIdx);            // +30 regardless of correctness
     var qn=document.getElementById('quizNext'); if(qn) qn.removeAttribute('disabled');
+    startBlink();
     return;
   }
   var btn=e.target.closest('[data-act]');
   if(!btn) return;
   var act=btn.getAttribute('data-act');
-  if(act==='next'){
-    if(step===1) awardStep(1);
-    else if(step===2) awardStep(2);
-    if(step<4){ step++; renderLesson(); }
-  } else if(act==='home'){
-    closeLesson();
-  } else if(act==='replay'){
-    step=1; awardedRun={}; quizAnswered=false; renderLesson();
+  if(act==='next'){ var current=COURSE[lang].steps[stepIdx]; if(current.reward) award(stepIdx); stepIdx++; renderLesson(); }
+  else if(act==='home'){ closeLesson(); }
+  else if(act==='replay'){ stepIdx=0; awardedRun={}; answered={}; selectedMatch={left:null,right:null,done:{}}; renderLesson(); }
+});
+
+lessonBody.addEventListener('input', function(e){
+  if(e.target.id!=='creditSlider') return;
+  var v=+e.target.value, s=COURSE[lang].steps[stepIdx], pct=Math.round(v/s.max*100);
+  document.getElementById('sliderVal').textContent='$'+v; document.getElementById('sliderPct').textContent=pct+'%';
+  if(v<=s.target) lessonBody.querySelector('[data-act="next"]').removeAttribute('disabled');
+});
+var selectedMatch={left:null,right:null,done:{}};
+lessonBody.addEventListener('click', function(e){
+  var reveal=e.target.closest('[data-interact="reveal"]');
+  if(reveal){reveal.classList.add('open');lessonBody.querySelector('[data-act="next"]').removeAttribute('disabled');return;}
+  var chip=e.target.closest('.match-chip'); if(!chip) return;
+  var s=COURSE[lang].steps[stepIdx], side=chip.dataset.side, i=+chip.dataset.i;
+  selectedMatch[side]=i; document.querySelectorAll('.match-chip[data-side="'+side+'"]').forEach(function(x){x.classList.remove('selected')}); chip.classList.add('selected');
+  if(selectedMatch.left!==null&&selectedMatch.right!==null){
+    if(s.pairs[selectedMatch.left]===selectedMatch.right){selectedMatch.done[selectedMatch.left]=true;document.querySelectorAll('.match-chip[data-i="'+selectedMatch.left+'"]').forEach(function(x){x.classList.add('matched');x.classList.remove('selected')});}
+    selectedMatch.left=null;selectedMatch.right=null;document.getElementById('matchHint').textContent=Object.keys(selectedMatch.done).length+' / '+s.left.length;
+    if(Object.keys(selectedMatch.done).length===s.left.length) lessonBody.querySelector('[data-act="next"]').removeAttribute('disabled');
   }
 });
 
@@ -1277,6 +1659,10 @@ lessonBody.addEventListener('click', function(e){
 langPill.addEventListener('click', function(){
   lang = (lang==='es') ? 'en' : 'es';
   langPill.textContent = '🌐 ' + (lang==='es'?'ES':'EN');
+  langPill.setAttribute('aria-label', lang==='es' ? 'Cambiar a inglés' : 'Switch to Spanish');
+  /* Match selections are text labels, so reset only the unfinished selection
+     state while retaining the learner's position and completed answers. */
+  selectedMatch={left:null,right:null,done:{}};
   renderLesson();
 });
 document.getElementById('lessonClose').addEventListener('click', closeLesson);
@@ -1296,8 +1682,29 @@ document.querySelectorAll('#screen-home .node.done').forEach(function(n){
   });
 });
 
+/* ---------- scale the phone mockup to fill the viewport (crisp, proportional) ---------- */
+function fitPhone(){
+  var vw = window.innerWidth || 390, vh = window.innerHeight || 820;
+  var s = Math.min(vw * 0.96 / 390, vh * 0.975 / 820);
+  if(!isFinite(s) || s < 0.2) s = 1;           // guard against 0-size frames
+  document.documentElement.style.setProperty('--scale', s.toFixed(3));
+}
+window.addEventListener('resize', fitPhone);
+window.addEventListener('load', fitPhone);
+if(window.ResizeObserver){ new ResizeObserver(fitPhone).observe(document.documentElement); }
+fitPhone();
+requestAnimationFrame(fitPhone);
+setTimeout(fitPhone, 250);
+
 /* ---------- INIT ---------- */
 renderCollection();
+var mascotPet=document.getElementById('mascotPet');
+if(mascotPet){ mascotPet.innerHTML=petWrapHTML(PET_BY_ID['foxy'],0); }
+var budLeft=document.getElementById('budLeft');
+var budRight=document.getElementById('budRight');
+if(budLeft){ budLeft.innerHTML=petWrapHTML(PET_BY_ID['bunny'],1)+'<span class="buddy-tag">Bunny</span>'; }
+if(budRight){ budRight.innerHTML=petWrapHTML(PET_BY_ID['rana'],2)+'<span class="buddy-tag">Rana</span>'; }
+startBlink();
 })();
 </script>
 </body>
