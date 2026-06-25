@@ -1,0 +1,2261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Avanza — App Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --orange:#FF8C42;
+  --orange-d:#F0762A;
+  --cream:#FAFAF8;
+  --cream2:#F8F6F1;
+  --sage:#9CAF88;
+  --sage-d:#7E9A6F;
+  --sage-l:#C9D6BE;
+  --charcoal:#2C2C2C;
+  --gray:#E8E8E8;
+  --gray2:#D6D6D2;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;}
+body{
+  font-family:'Nunito',sans-serif;
+  background:#EFEDE6;
+  color:var(--charcoal);
+  display:flex;align-items:center;justify-content:center;
+  min-height:100vh;padding:24px 0;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ---------- PHONE FRAME ---------- */
+.phone{
+  width:390px;height:780px;max-height:90vh;
+  background:var(--cream);
+  border-radius:40px;
+  border:10px solid #1a1a1a;
+  overflow:hidden;position:relative;
+  box-shadow:0 30px 70px rgba(0,0,0,.35);
+  display:flex;flex-direction:column;
+}
+.notch{
+  position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:150px;height:26px;background:#1a1a1a;border-radius:0 0 18px 18px;z-index:50;
+}
+
+/* ---------- SCREENS ---------- */
+.screen{
+  flex:1;display:none;flex-direction:column;overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+}
+.screen.active{display:flex;}
+.screen::-webkit-scrollbar{display:none;}
+
+/* ---------- TOP STAT BAR ---------- */
+.statbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:34px 16px 12px;background:var(--cream);
+  border-bottom:1px solid var(--gray);
+}
+.stat{
+  display:flex;align-items:center;gap:5px;
+  font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;
+}
+.stat .flag{font-size:1.2rem;}
+.stat.streak{color:var(--orange-d);}
+.stat.gems{color:#5B8DEF;}
+
+/* ---------- UNIT HEADER ---------- */
+.unit-header{
+  background:linear-gradient(135deg,var(--sage),var(--sage-d));
+  margin:14px 14px 0;border-radius:18px;
+  padding:16px 18px;display:flex;align-items:center;justify-content:space-between;
+  color:#fff;box-shadow:0 8px 20px rgba(158,179,136,.35);
+}
+.unit-header .label{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.68rem;letter-spacing:.18em;opacity:.85;text-transform:uppercase;margin-bottom:4px;}
+.unit-header h2{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.25rem;margin-bottom:2px;}
+.unit-header p{font-size:.8rem;opacity:.9;}
+.unit-header .book-btn{
+  width:42px;height:42px;border-radius:12px;background:rgba(255,255,255,.22);
+  display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;
+}
+
+/* ---------- PATH ---------- */
+.path{
+  flex:1;padding:36px 0 30px;position:relative;
+  display:flex;flex-direction:column;align-items:center;gap:30px;
+}
+.path::before{
+  content:'';position:absolute;left:50%;top:30px;bottom:30px;width:2px;
+  background:repeating-linear-gradient(to bottom, var(--gray2) 0 8px, transparent 8px 16px);
+  transform:translateX(-50%);z-index:0;
+}
+.node{
+  position:relative;z-index:1;
+  width:74px;height:74px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.7rem;
+  border:5px solid var(--cream);
+  box-shadow:0 4px 0 rgba(0,0,0,.08);
+  transition:transform .15s;
+}
+.node:active{transform:scale(.94);}
+.node.locked{background:var(--gray);color:var(--gray2);box-shadow:0 4px 0 #cfcfcb;}
+.node.locked .lock{color:#b8b8b3;font-size:1.3rem;}
+.node.done{background:var(--sage);color:#fff;box-shadow:0 4px 0 var(--sage-d);}
+.node.current{background:var(--orange);color:#fff;box-shadow:0 4px 0 var(--orange-d);}
+.node.avail{background:#fff;color:var(--sage-d);border:5px solid var(--sage-l);box-shadow:0 4px 0 var(--sage-l);cursor:pointer;}
+.node.alt{margin-left:90px;}
+.node.alt2{margin-right:90px;}
+
+.start-bubble{
+  position:absolute;top:-46px;left:50%;transform:translateX(-50%);
+  background:#fff;border:2px solid var(--gray2);
+  font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.78rem;letter-spacing:.1em;
+  color:var(--orange-d);padding:7px 16px;border-radius:12px;white-space:nowrap;
+  box-shadow:0 4px 10px rgba(0,0,0,.06);
+}
+.start-bubble::after{
+  content:'';position:absolute;bottom:-7px;left:50%;transform:translateX(-50%) rotate(45deg);
+  width:12px;height:12px;background:#fff;border-right:2px solid var(--gray2);border-bottom:2px solid var(--gray2);
+}
+.pulse-ring{
+  position:absolute;inset:-8px;border-radius:50%;border:3px solid var(--orange);
+  opacity:0;animation:pulseRing 2.4s ease-out infinite;
+}
+@keyframes pulseRing{0%{opacity:.6;transform:scale(.9);}70%{opacity:0;transform:scale(1.25);}100%{opacity:0;}}
+
+/* ---------- BOTTOM NAV ---------- */
+.bottomnav{
+  display:flex;justify-content:space-around;align-items:center;
+  padding:12px 10px 16px;background:var(--cream);
+  border-top:1px solid var(--gray);
+}
+.navbtn{
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  background:none;border:none;cursor:pointer;
+  color:var(--gray2);font-family:'Baloo 2',sans-serif;font-weight:700;font-size:.62rem;
+  letter-spacing:.06em;text-transform:uppercase;
+  padding:6px 14px;border-radius:14px;transition:background .15s,color .15s;
+}
+.navbtn .icon{font-size:1.5rem;line-height:1;}
+.navbtn.active{color:var(--orange-d);background:rgba(255,140,66,.10);}
+
+/* ---------- GENERIC SCREEN HEADER ---------- */
+.screen-head{
+  padding:34px 18px 14px;background:var(--cream);border-bottom:1px solid var(--gray);
+}
+.screen-head h1{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.5rem;}
+.screen-head p{color:#8a8a85;font-size:.82rem;margin-top:3px;}
+
+/* ---------- LEADERBOARD ---------- */
+.lb-tabs{display:flex;gap:8px;padding:14px 16px 0;}
+.lb-tab{
+  flex:1;text-align:center;padding:9px;border-radius:12px;
+  font-family:'Baloo 2',sans-serif;font-weight:700;font-size:.75rem;
+  background:var(--gray);color:#9a9a95;cursor:pointer;
+}
+.lb-tab.active{background:var(--sage);color:#fff;}
+.lb-list{padding:14px 14px 20px;display:flex;flex-direction:column;gap:8px;}
+.social-bar{margin:14px 16px 0;padding:12px 14px;background:#fff;border:1px solid var(--gray);border-radius:16px;display:flex;justify-content:space-between;align-items:center}.social-bar small{display:block;color:#8a8a85;font-size:.7rem;margin-top:2px}.social-btn,.trade-btn{border:0;background:var(--sage);color:#fff;font:800 .72rem 'Baloo 2',sans-serif;border-radius:10px;padding:9px 11px}.trade-btn{display:block;width:calc(100% - 32px);margin:0 16px 8px;background:#5B8DEF;box-shadow:0 4px 0 #3D6FB8}.trade-btn span{opacity:.75;font:700 .62rem 'Nunito',sans-serif;margin-left:5px}
+.lb-row{
+  display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:16px;
+  background:#fff;border:1px solid var(--gray);
+}
+.lb-row.me{border-color:var(--orange);background:#FFF4EC;}
+.lb-rank{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1rem;width:24px;text-align:center;color:#b0b0aa;}
+.lb-rank.r1{color:#F0B429;}
+.lb-rank.r2{color:#A8A8A8;}
+.lb-rank.r3{color:var(--orange);}
+.lb-avatar{
+  width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:1.2rem;flex-shrink:0;
+}
+.lb-name{flex:1;font-weight:800;font-size:.88rem;}
+.lb-pts{font-family:'Baloo 2',sans-serif;font-weight:800;color:var(--sage-d);font-size:.85rem;display:flex;align-items:center;gap:4px;}
+
+/* ---------- CHESTS / PLUSHIES ---------- */
+.chest-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:16px;}
+.chest-card{
+  background:#fff;border:1px solid var(--gray);border-radius:18px;
+  padding:18px 12px;text-align:center;cursor:pointer;
+  transition:transform .15s;position:relative;overflow:hidden;
+}
+.chest-card:active{transform:scale(.96);}
+.chest-card.locked{opacity:.55;}
+.chest-emoji{font-size:2.6rem;margin-bottom:8px;display:block;transition:transform .4s;}
+.chest-card.shake .chest-emoji{animation:chestShake .5s ease;}
+@keyframes chestShake{0%,100%{transform:rotate(0)}20%{transform:rotate(-8deg)}40%{transform:rotate(8deg)}60%{transform:rotate(-6deg)}80%{transform:rotate(6deg)}}
+.chest-title{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.85rem;margin-bottom:3px;}
+.chest-sub{font-size:.7rem;color:#9a9a95;}
+.chest-req{
+  margin-top:8px;font-family:'Baloo 2',sans-serif;font-weight:700;font-size:.68rem;
+  color:#fff;background:var(--sage);padding:4px 10px;border-radius:999px;display:inline-block;
+}
+.chest-req.gems{background:#5B8DEF;}
+
+.collection-title{
+  font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;
+  padding:14px 16px 4px;color:var(--charcoal);
+}
+.plushie-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:8px 16px 20px;}
+#plushieGrid{display:block;padding:0 16px 20px}.rarity-heading{margin:16px 0 3px;padding:0;font-size:.88rem}.rarity-heading.common{color:#777}.rarity-heading.rare{color:#5B8DEF}.rarity-heading.epic{color:#B36BD4}.rarity-heading.legendary,.rarity-heading.secret{color:#C8951A}#plushieGrid .plushie-grid{padding:8px 0 4px}
+.plushie{
+  background:#fff;border:1px solid var(--gray);border-radius:16px;
+  padding:12px 6px;text-align:center;position:relative;
+}
+.plushie.locked{background:var(--cream2);border-color:var(--gray);}
+.plushie.secret{grid-column:span 3;min-height:215px;padding:18px;background:radial-gradient(circle,#FFF4C8,#F0B429);border:3px solid #C8951A}.plushie.secret .pet-wrap{width:160px;height:160px}.plushie.equipped{outline:3px solid var(--sage);box-shadow:0 0 0 5px #EAF3E1}.equip-btn{border:0;border-radius:999px;padding:5px 9px;margin-top:5px;background:var(--sage);color:#fff;font-weight:800;font-size:.6rem}
+.active-pets{display:flex;gap:5px;align-items:center}.active-pets .mini{width:29px;height:29px;border-radius:50%;background:#fff;border:2px solid var(--sage);overflow:hidden;animation:petFloat 2.5s ease-in-out infinite}.active-pets img{width:100%;height:100%;object-fit:contain}.pet-role{font-size:.58rem;color:#7a7a75;margin-top:2px}
+.squad-card{margin:10px 14px;padding:11px 14px;border-radius:16px;background:#fff;border:1px solid var(--gray);display:flex;justify-content:space-between;align-items:center}.squad-card small{display:block;color:#8a8a85;font-size:.68rem}.demo-toast{position:absolute;top:55px;left:50%;transform:translate(-50%,-18px);opacity:0;z-index:350;background:#fff;padding:11px 16px;border-radius:14px;box-shadow:0 8px 24px #2c2c2c33;transition:.25s;pointer-events:none}.demo-toast.show{opacity:1;transform:translate(-50%,0)}.onboard{position:absolute;inset:0;z-index:400;background:linear-gradient(160deg,var(--orange),var(--orange-d),var(--sage-d));display:flex;place-items:center;justify-content:center}.onboard.hide{display:none}.onboard-card{text-align:center;color:#fff;padding:28px}.onboard-card h1{font:800 2.6rem 'Baloo 2'}.onboard-card button{margin:5px;border:0;border-radius:14px;padding:13px 20px;font-weight:800;color:var(--orange-d)}
+.daily-modal,.feature-modal{display:none;position:absolute;inset:0;z-index:450;background:#2c2c2c99;place-items:center;padding:18px}.daily-modal.show,.feature-modal.show{display:grid}.daily-card,.feature-card{position:relative;width:100%;background:linear-gradient(160deg,#fff,#FFF3E6);border-radius:24px;padding:24px;text-align:center;box-shadow:0 12px 0 #9a9a95}.daily-card h2,.feature-card h2{font:800 1.5rem 'Baloo 2';color:var(--orange-d)}.daily-card>button:first-child,.feature-card>button:first-child{position:absolute;right:12px;top:10px;border:0;background:#FF5A4D;color:#fff;border-radius:10px;font-weight:900;font-size:1rem}.feature-card>#featureClose,.daily-card>#dailyClose{width:46px;height:46px;min-width:46px;padding:0;display:grid;place-items:center;line-height:1;font-size:2rem;border-radius:12px;cursor:pointer;box-shadow:0 3px 0 #D93E36}.feature-card>#featureClose:active,.daily-card>#dailyClose:active{transform:translateY(3px);box-shadow:none}.daily-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:16px 0}.daily-day{border-radius:12px;padding:9px 3px;background:#B36BD4;color:white;font-size:.62rem}.daily-day:nth-child(2n){background:#5B8DEF}.daily-day.today{grid-column:span 2;background:#F0D833;color:#5a4a00;font-weight:900;font-size:.82rem}.daily-day span{display:block;font-size:1.55rem}.feature-card{max-width:310px}.feature-card #featureArt{font-size:3rem}.plan-card{margin:12px 16px 24px;padding:16px;border-radius:18px;background:linear-gradient(135deg,#FFF1E8,#EAF3E1);border:2px solid var(--sage)}.plan-card p{font-size:.76rem;line-height:1.45;color:#5d5a53}
+.plushie .emoji{font-size:1.9rem;display:block;margin-bottom:4px;}
+.plushie .name{font-size:.66rem;font-weight:700;color:#7a7a75;}
+.plushie .rarity{
+  font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.55rem;letter-spacing:.08em;
+  text-transform:uppercase;margin-top:3px;display:inline-block;padding:1px 6px;border-radius:6px;
+}
+.rarity.common{background:var(--gray);color:#9a9a95;}
+.rarity.rare{background:#DCE9FA;color:#5B8DEF;}
+.rarity.epic{background:#F3E3FB;color:#B36BD4;}
+.rarity.legendary{background:#FBF0D5;color:#C8951A;}
+
+/* ---------- REWARD MODAL ---------- */
+.modal-overlay{
+  position:absolute;inset:0;background:rgba(44,44,44,.55);
+  display:none;align-items:center;justify-content:center;z-index:100;
+}
+.modal-overlay.show{display:flex;}
+.modal-card{
+  background:#fff;border-radius:24px;padding:32px 26px;text-align:center;width:80%;
+  animation:popIn .45s cubic-bezier(.34,1.56,.64,1) both;
+}
+@keyframes popIn{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
+.modal-emoji{font-size:4rem;margin-bottom:10px;animation:bobble 1.4s ease-in-out infinite;}
+@keyframes bobble{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-8px) rotate(-4deg)}}
+.modal-title{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.2rem;color:var(--orange-d);margin-bottom:4px;}
+.modal-sub{font-size:.85rem;color:#9a9a95;margin-bottom:18px;}
+.modal-btn{
+  width:100%;padding:13px;border:none;border-radius:14px;
+  background:var(--sage);color:#fff;font-family:'Baloo 2',sans-serif;font-weight:800;
+  font-size:.85rem;letter-spacing:.05em;text-transform:uppercase;cursor:pointer;
+}
+
+/* ---------- SETTINGS ---------- */
+.settings-list{padding:8px 16px 20px;display:flex;flex-direction:column;gap:8px;}
+.settings-row{
+  display:flex;align-items:center;gap:14px;background:#fff;border:1px solid var(--gray);
+  border-radius:16px;padding:14px 16px;
+}
+.settings-row .icon{font-size:1.3rem;width:28px;text-align:center;}
+.settings-row .label{flex:1;font-weight:800;font-size:.88rem;}
+.settings-row .val{font-size:.78rem;color:#9a9a95;font-weight:700;}
+.toggle{
+  width:42px;height:24px;border-radius:999px;background:var(--gray2);position:relative;cursor:pointer;
+  transition:background .2s;flex-shrink:0;
+}
+.toggle.on{background:var(--sage);}
+.toggle::after{
+  content:'';position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;
+  background:#fff;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.2);
+}
+.toggle.on::after{left:20px;}
+.profile-card{
+  margin:14px 16px 4px;background:linear-gradient(135deg,var(--orange),var(--orange-d));
+  border-radius:18px;padding:18px;color:#fff;display:flex;align-items:center;gap:14px;
+}
+.profile-avatar{
+  width:54px;height:54px;border-radius:50%;background:rgba(255,255,255,.25);
+  display:flex;align-items:center;justify-content:center;font-size:1.6rem;flex-shrink:0;
+}
+.profile-name{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.05rem;}
+.profile-sub{font-size:.78rem;opacity:.85;}
+
+/* ============================================================
+   ADDED — VISUAL POLISH (brand + warmer, richer screens)
+   palette-faithful: orange / sage / cream / gold / rarity hues
+   ============================================================ */
+/* brand wordmark replacing the locale flag */
+.brand{display:flex;align-items:center;gap:7px;}
+.brand-mark{
+  width:25px;height:25px;border-radius:8px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--orange),var(--orange-d));
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 3px 9px rgba(240,118,42,.45);
+}
+.brand-name{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.12rem;color:var(--orange-d);letter-spacing:-.01em;}
+.stat-group{display:flex;align-items:center;gap:10px;}
+.stat.streak,.stat.gems{padding:5px 11px;border-radius:999px;}
+.stat.streak{background:#FFEFE3;}
+.stat.gems{background:#EAF1FD;}
+
+/* soft warm wash behind every screen */
+.screen{position:relative;}
+#screen-home{background:radial-gradient(135% 55% at 50% -8%, #FFF1E4 0%, rgba(255,241,228,0) 55%), var(--cream);}
+#screen-board,#screen-chests,#screen-settings{background:radial-gradient(135% 42% at 50% -8%, #FFF5EC 0%, rgba(255,245,236,0) 50%), var(--cream);}
+.screen-head{background:linear-gradient(180deg,#FFF7F0,var(--cream));}
+
+/* ambient decorative blobs on the learning path (behind nodes) */
+.blob{position:absolute;border-radius:50%;pointer-events:none;z-index:0;}
+.blob-a{width:160px;height:160px;background:radial-gradient(circle,rgba(255,140,66,.16),transparent 70%);top:30px;right:-34px;}
+.blob-b{width:210px;height:210px;background:radial-gradient(circle,rgba(156,175,136,.20),transparent 70%);bottom:20px;left:-56px;}
+
+/* glossy sheen on the hero gradient cards */
+.unit-header{position:relative;overflow:hidden;flex-shrink:0;}
+.unit-header::after{content:'';position:absolute;width:130px;height:130px;border-radius:50%;background:rgba(255,255,255,.13);top:-56px;right:-28px;pointer-events:none;}
+.profile-card{position:relative;overflow:hidden;flex-shrink:0;}
+.profile-card::after{content:'';position:absolute;width:140px;height:140px;border-radius:50%;background:rgba(255,255,255,.15);top:-62px;right:-30px;pointer-events:none;}
+
+/* chest cards: soft lift + rarity accent bar on top */
+.chest-card{background:linear-gradient(180deg,#fff,#FCFBF7);box-shadow:0 6px 16px rgba(44,44,44,.05);}
+.chest-card::after{content:'';position:absolute;top:0;left:0;right:0;height:5px;}
+.chest-grid .chest-card:nth-child(1)::after{background:var(--sage);}
+.chest-grid .chest-card:nth-child(2)::after{background:var(--orange);}
+.chest-grid .chest-card:nth-child(3)::after{background:#5B8DEF;}
+.chest-grid .chest-card:nth-child(4)::after{background:#B36BD4;}
+
+/* leaderboard: medal-style top-3 ranks + accent on your row */
+.lb-rank.r1,.lb-rank.r2,.lb-rank.r3{
+  width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:.78rem;box-shadow:0 2px 5px rgba(0,0,0,.12);
+}
+.lb-rank.r1{background:linear-gradient(135deg,#F8D466,#F0B429);}
+.lb-rank.r2{background:linear-gradient(135deg,#CFCFCF,#A8A8A8);}
+.lb-rank.r3{background:linear-gradient(135deg,#F6B083,var(--orange));}
+.lb-row{box-shadow:0 3px 10px rgba(44,44,44,.04);}
+.lb-row.me{box-shadow:inset 3px 0 0 var(--orange),0 3px 10px rgba(240,118,42,.10);}
+
+/* settings rows: subtle lift */
+.settings-row{box-shadow:0 3px 10px rgba(44,44,44,.04);}
+
+/* ============================================================
+   ADDED — PET SYSTEM (SVG pets, idle anims, auras)
+   keeps existing palette + card layout, only adds inside cards
+   ============================================================ */
+.pet-svg{width:100%;height:100%;display:block;overflow:visible;filter:drop-shadow(0 4px 0 rgba(44,44,44,.24));}
+.pet-model-img{width:100%;height:100%;object-fit:contain;display:block;filter:drop-shadow(0 4px 0 rgba(44,44,44,.2));}
+.pet-body{transform-box:fill-box;transform-origin:center;animation:petBreathe 3s ease-in-out infinite;}
+@keyframes petBreathe{0%,100%{transform:scale(1);}50%{transform:scale(1.03);}}
+.pet-tail{transform-box:fill-box;transform-origin:center;animation:petWag .8s ease-in-out infinite alternate;}
+@keyframes petWag{0%{transform:rotate(-8deg);}100%{transform:rotate(8deg);}}
+.pet-eye{transform-box:fill-box;transform-origin:center;transition:transform .12s ease;}
+.pet-eye.blink{transform:scaleY(.1);}
+.pet-model{stroke:#2C2C2C;stroke-width:2.6;stroke-linejoin:round;stroke-linecap:round;}
+.pet-model .pet-shine,.pet-model .pet-facet,.pet-model .pet-blush{stroke:none;}
+.pet-model .pet-eye{stroke:none;}.pet-model .pet-eye circle:first-child{stroke:#2C2C2C;stroke-width:1.4;}
+.pet-feet{stroke:#2C2C2C;stroke-width:2.4;}.pet-cheek{stroke:none;opacity:.34;}
+
+.pet-wrap{position:relative;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:transform .2s ease;}
+.pet-float{width:100%;height:100%;display:flex;align-items:center;justify-content:center;animation:petFloat 2.5s ease-in-out infinite;}
+@keyframes petFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
+
+.plushie .pet-wrap{width:62px;height:62px;margin:0 auto 4px;}
+.plushie:hover .pet-wrap,.plushie:active .pet-wrap{transform:scale(1.1);}
+.plushie.locked .pet-wrap{filter:brightness(0) opacity(.28);}
+.plushie .lock-ov{position:absolute;top:14px;left:0;right:0;font-size:1.2rem;pointer-events:none;}
+
+/* rarity auras */
+.aura-rare{animation:auraRare 2s ease-in-out infinite;}
+@keyframes auraRare{0%,100%{box-shadow:0 0 16px 4px rgba(96,165,250,.4);}50%{box-shadow:0 0 16px 4px rgba(96,165,250,1);}}
+.aura-epic{animation:auraEpic 2s ease-in-out infinite;}
+@keyframes auraEpic{0%,100%{box-shadow:0 0 20px 6px rgba(168,85,247,.4);}50%{box-shadow:0 0 20px 6px rgba(168,85,247,1);}}
+.aura-epic::before,.aura-epic::after{content:'';position:absolute;top:50%;left:50%;width:6px;height:6px;margin:-3px;border-radius:50%;background:#E9B8FF;box-shadow:0 0 8px #C77DFF;}
+.aura-epic::before{animation:orbitA 3s linear infinite;}
+.aura-epic::after{animation:orbitB 4s linear infinite;}
+@keyframes orbitA{from{transform:rotate(0deg) translateX(42px);}to{transform:rotate(360deg) translateX(42px);}}
+@keyframes orbitB{from{transform:rotate(180deg) translateX(38px);}to{transform:rotate(540deg) translateX(38px);}}
+.aura-legendary{animation:auraLeg 2s ease-in-out infinite;}
+@keyframes auraLeg{0%,100%{box-shadow:0 0 28px 10px rgba(240,180,41,.5);}50%{box-shadow:0 0 28px 10px rgba(240,180,41,1);}}
+.leg-ring{position:absolute;inset:-12px;border-radius:50%;border:3px dashed rgba(240,180,41,.85);animation:legSpin 6s linear infinite;pointer-events:none;}
+@keyframes legSpin{to{transform:rotate(360deg);}}
+.leg-spark{position:absolute;left:50%;top:50%;width:6px;height:6px;margin:-3px;border-radius:50%;background:#FFE08A;box-shadow:0 0 8px #F0B429;animation:legSpark 1.6s ease-in-out infinite;}
+@keyframes legSpark{0%,100%{opacity:.25;}50%{opacity:1;}}
+
+/* ============================================================
+   ADDED — EGG HATCH OVERLAY (BGS-style sequence)
+   ============================================================ */
+.egg-overlay{
+  position:absolute;inset:0;background:rgba(44,44,44,.72);
+  display:none;flex-direction:column;align-items:center;justify-content:center;
+  z-index:200;padding:24px;
+}
+.egg-overlay.show{display:flex;}
+.egg-stage{position:relative;width:200px;height:210px;display:flex;align-items:center;justify-content:center;}
+.egg-stage::before{content:'';position:absolute;width:132px;height:26px;bottom:12px;border-radius:50%;background:rgba(0,0,0,.20);filter:blur(2px);animation:eggShadow 1s ease-in-out infinite;}
+.egg-shell{width:150px;height:180px;}
+.egg-svg{width:100%;height:100%;display:block;overflow:visible;}
+.egg-rock{animation:eggRock .58s cubic-bezier(.36,.07,.19,.97) infinite;}
+@keyframes eggRock{0%,100%{transform:rotate(-5deg) translateY(0) scale(1)}35%{transform:rotate(5deg) translateY(-5px) scale(1.03,.97)}65%{transform:rotate(-3deg) translateY(0) scale(.98,1.04)}}
+.egg-shake{animation:eggShake .075s linear infinite;}
+@keyframes eggShake{0%,100%{transform:translateX(-3px) rotate(-4deg)}50%{transform:translateX(3px) rotate(4deg)}}
+.egg-pop{animation:eggPop .42s cubic-bezier(.18,.8,.3,1) forwards;}
+@keyframes eggPop{30%{transform:scale(1.18,.82)}100%{transform:scale(2.15) rotate(15deg);opacity:0;}}
+@keyframes eggShadow{0%,100%{transform:scaleX(1);opacity:.25}50%{transform:scaleX(.72);opacity:.12}}
+.crack{fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:80;stroke-dashoffset:80;}
+.crack.go{animation:crackIn 1.4s ease forwards;}
+@keyframes crackIn{to{stroke-dashoffset:0;}}
+
+.pet-reveal{position:absolute;width:150px;height:150px;display:flex;align-items:center;justify-content:center;transform:scale(0);opacity:0;}
+.pet-reveal .pet-wrap{width:130px;height:130px;}
+.pet-reveal.in{animation:springIn .6s cubic-bezier(.34,1.56,.64,1) forwards;}
+@keyframes springIn{0%{transform:scale(0);opacity:0;}60%{transform:scale(1.2);opacity:1;}100%{transform:scale(1);opacity:1;}}
+
+.reveal-info{display:none;text-align:center;margin-top:18px;width:80%;}
+.reveal-info.in>*{opacity:0;transform:translateY(12px);animation:fadeUp .5s ease forwards;}
+.reveal-info.in>*:nth-child(1){animation-delay:.05s;}
+.reveal-info.in>*:nth-child(2){animation-delay:.18s;}
+.reveal-info.in>*:nth-child(3){animation-delay:.31s;}
+.reveal-info.in>*:nth-child(4){animation-delay:.44s;}
+@keyframes fadeUp{to{opacity:1;transform:none;}}
+.gem-badge-gold{background:#F0B429;color:#fff;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.05rem;padding:8px 18px;border-radius:999px;display:inline-block;margin:6px 0 16px;}
+
+.particle{position:absolute;left:50%;top:50%;width:8px;height:8px;border-radius:50%;pointer-events:none;animation:particleFly .9s ease-out forwards;}
+@keyframes particleFly{0%{transform:translate(-50%,-50%) scale(1);opacity:1;}100%{transform:translate(calc(-50% + var(--tx)),calc(-50% + var(--ty))) scale(.3);opacity:0;}}
+.frag{position:absolute;left:50%;top:50%;width:12px;height:14px;border-radius:30% 40% 35% 45%;pointer-events:none;animation:fragFly .65s ease-out forwards;}
+@keyframes fragFly{0%{transform:translate(-50%,-50%) rotate(0);opacity:1;}100%{transform:translate(calc(-50% + var(--fx)),calc(-50% + var(--fy))) rotate(var(--fr));opacity:0;}}
+
+/* ============================================================
+   ADDED — LESSON OVERLAY (full working lesson flow)
+   uses existing light card palette / radii / typography
+   ============================================================ */
+.lesson-overlay{
+  position:absolute;inset:0;background:var(--cream);
+  display:none;flex-direction:column;z-index:150;
+}
+.lesson-overlay.show{display:flex;}
+.lesson-top{display:flex;align-items:center;gap:12px;padding:32px 16px 12px;background:var(--cream);border-bottom:1px solid var(--gray);}
+.lesson-close{
+  width:44px;height:44px;flex-shrink:0;border:none;background:#FF5A4D;color:#fff;
+  border-radius:12px;font-size:1.7rem;line-height:1;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;
+}
+.lesson-prog{flex:1;height:12px;background:var(--gray);border-radius:999px;overflow:hidden;}
+.lesson-prog-fill{height:100%;width:25%;border-radius:999px;background:linear-gradient(90deg,var(--orange),var(--orange-d));transition:width .45s ease;}
+.lang-pill{
+  flex-shrink:0;border:none;cursor:pointer;background:var(--sage-l);color:var(--sage-d);
+  font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.7rem;letter-spacing:.04em;
+  padding:7px 11px;border-radius:999px;
+}
+.lesson-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:10px 18px 24px;}
+.lesson-body::-webkit-scrollbar{display:none;}
+.lkick{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;color:var(--sage-d);margin:6px 0 6px;}
+.lesson-h{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.45rem;margin-bottom:12px;color:var(--charcoal);}
+.lesson-p{font-size:.92rem;line-height:1.55;color:#55554f;margin-bottom:16px;}
+.callout{border:2px solid var(--orange);background:#FFF4EC;border-radius:14px;padding:14px 15px;font-size:.85rem;line-height:1.5;color:#9a5a2b;margin-bottom:18px;}
+.callout b{color:var(--orange-d);}
+.factor{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--gray);border-radius:14px;padding:11px 12px;margin-bottom:9px;}
+.factor .pct{font-family:'Baloo 2',sans-serif;font-weight:800;color:#fff;font-size:.82rem;min-width:48px;text-align:center;padding:7px 6px;border-radius:10px;flex-shrink:0;}
+.factor .ftit{font-weight:800;font-size:.82rem;}
+.factor .fdesc{font-size:.72rem;color:#9a9a95;margin-top:1px;}
+.quiz-q{font-weight:800;font-size:.95rem;line-height:1.45;margin:6px 0 16px;}
+.quiz-opt{
+  display:block;width:100%;text-align:left;background:#fff;border:2px solid var(--gray);
+  border-radius:14px;padding:13px 15px;margin-bottom:10px;cursor:pointer;
+  font-family:'Nunito',sans-serif;font-weight:700;font-size:.88rem;color:var(--charcoal);
+  transition:background .2s,border-color .2s,color .2s;
+}
+.quiz-opt.correct{background:#E8F2DD;border-color:var(--sage);color:var(--sage-d);}
+.quiz-opt.wrong{background:#FBE6E6;border-color:#E08A8A;color:#C25555;}
+.quiz-fb{font-size:.84rem;font-weight:700;line-height:1.4;margin:6px 0 16px;display:none;}
+.quiz-fb.show{display:block;}
+.quiz-fb.ok{color:var(--sage-d);}
+.lesson-btn{
+  width:100%;padding:14px;border:none;border-radius:14px;cursor:pointer;
+  background:var(--orange);color:#fff;font-family:'Baloo 2',sans-serif;font-weight:800;
+  font-size:.88rem;letter-spacing:.04em;text-transform:uppercase;margin-top:6px;
+}
+.lesson-btn.sage{background:var(--sage);}
+.lesson-btn[disabled]{opacity:.4;cursor:default;}
+.complete-wrap{text-align:center;position:relative;padding-top:24px;}
+.complete-circle{
+  width:112px;height:112px;border-radius:50%;margin:6px auto 18px;
+  background:linear-gradient(135deg,var(--orange),#F0B429);
+  display:flex;align-items:center;justify-content:center;font-size:3rem;color:#fff;
+  box-shadow:0 12px 26px rgba(240,180,41,.4);
+  animation:springIn .6s cubic-bezier(.34,1.56,.64,1) both;
+}
+.complete-wrap h2{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.5rem;margin-bottom:6px;}
+.complete-wrap .csub{font-size:.85rem;color:#9a9a95;margin-bottom:4px;}
+
+/* ============================================================
+   ADDED — VIBRANT MODE (Duolingo-style energy · SAME palette)
+   chunky 3D "pressable" buttons · bold fills · lively backdrop
+   ============================================================ */
+
+/* lively saturated backdrop + floating sparkles around the phone */
+body{
+  background:linear-gradient(160deg,#FFBE85 0%,#FF8C42 42%,#8FA978 110%);
+}
+.bg-deco{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+.bg-deco .spark{position:absolute;color:rgba(255,255,255,.55);font-size:2rem;animation:twinkle 3s ease-in-out infinite;}
+.bg-deco .spark.big{font-size:3.4rem;color:rgba(255,255,255,.42);}
+.bg-deco .s1{top:9%;left:8%;}
+.bg-deco .s2{top:20%;right:9%;animation-delay:.6s;}
+.bg-deco .s3{bottom:24%;left:7%;animation-delay:1.1s;}
+.bg-deco .s4{bottom:11%;right:11%;animation-delay:.3s;}
+.bg-deco .s5{top:46%;left:4%;animation-delay:1.5s;}
+.bg-deco .s6{top:54%;right:5%;animation-delay:.9s;}
+@keyframes twinkle{0%,100%{opacity:.35;transform:scale(.85) rotate(0);}50%{opacity:1;transform:scale(1.1) rotate(15deg);}}
+.phone{position:relative;z-index:1;}
+
+/* brighter top stat chips */
+.stat.streak{background:#FFE0CC;color:#E85D1F;}
+.stat.gems{background:#DCE9FF;color:#2F6BE0;}
+.brand-name{color:var(--orange-d);}
+
+/* bolder, deeper unit header with chunky base */
+.unit-header{
+  background:linear-gradient(135deg,#A6C088,#6F8F5E);
+  box-shadow:0 8px 0 #5E7A50, 0 16px 26px rgba(94,122,80,.35);
+}
+
+/* ---- CHUNKY 3D PATH NODES (Duolingo coins) ---- */
+.node{width:80px;height:80px;border:6px solid #fff;transition:transform .12s,box-shadow .12s;}
+.node.done{background:#9CAF88;box-shadow:0 7px 0 #5E7A50;}
+.node.current{background:var(--orange);box-shadow:0 7px 0 #D85F1A;}
+.node.locked{background:#E4E4E0;box-shadow:0 7px 0 #C9C9C4;}
+.node.avail{background:#fff;border:6px solid var(--sage-l);box-shadow:0 7px 0 var(--sage-l);}
+.node:active{transform:translateY(4px);box-shadow:0 3px 0 rgba(0,0,0,.18);}
+
+/* Duolingo-style START button with mini progress bar */
+.start-bubble{
+  top:-52px;font-size:.82rem;padding:8px 16px 9px;border:none;color:var(--sage-d);
+  box-shadow:0 4px 0 #E2DECF;
+}
+.start-bubble::after{display:none;}
+.start-prog{display:block;height:7px;width:78px;margin-top:5px;border-radius:999px;background:var(--gray);overflow:hidden;}
+.start-prog::before{content:'';display:block;height:100%;width:42%;border-radius:999px;background:linear-gradient(90deg,#9CAF88,#7E9A6F);}
+
+/* ---- CHUNKY 3D BUTTONS everywhere ---- */
+.lesson-btn{box-shadow:0 5px 0 #D85F1A;transition:transform .12s,box-shadow .12s;}
+.lesson-btn.sage{box-shadow:0 5px 0 #5E7A50;}
+.lesson-btn:active{transform:translateY(4px);box-shadow:0 1px 0 #D85F1A;}
+.lesson-btn.sage:active{box-shadow:0 1px 0 #5E7A50;}
+.modal-btn{box-shadow:0 5px 0 #5E7A50;transition:transform .12s,box-shadow .12s;}
+.modal-btn:active{transform:translateY(4px);box-shadow:0 1px 0 #5E7A50;}
+
+/* ---- CHEST CARDS: chunky solid base + livelier ---- */
+.chest-card{box-shadow:0 6px 0 #E7E3D6;transition:transform .12s,box-shadow .12s;}
+.chest-card:active{transform:translateY(4px);box-shadow:0 2px 0 #E7E3D6;}
+.chest-emoji{font-size:2.9rem;}
+
+/* ---- LEADERBOARD: punchier tabs + medals ---- */
+.lb-tab.active{box-shadow:0 4px 0 #5E7A50;}
+.lb-tab{transition:transform .12s;}
+.lb-pts{color:#2F6BE0;}
+.lb-pts .me-pts{color:var(--orange-d);}
+
+/* ---- BOTTOM NAV active pops more ---- */
+.navbtn.active{background:rgba(255,140,66,.16);box-shadow:0 3px 0 rgba(240,118,42,.22);}
+
+/* ---- vibrant factor / callout accents already on-palette ---- */
+.callout{background:#FFEFE2;}
+
+/* ============================================================
+   ADDED — PREMIUM REFINEMENT PASS  (MVP-grade polish)
+   bigger focal phone · calm pro backdrop · depth tokens ·
+   interactivity · dashboard hierarchy · consistency
+   palette + features unchanged
+   ============================================================ */
+:root{
+  --r-sm:12px; --r-md:16px; --r-lg:20px;
+  --sh-1:0 1px 3px rgba(40,33,26,.05), 0 1px 2px rgba(40,33,26,.04);
+  --sh-2:0 6px 16px rgba(40,33,26,.07), 0 2px 5px rgba(40,33,26,.04);
+  --sh-3:0 18px 40px rgba(40,33,26,.11), 0 6px 14px rgba(40,33,26,.06);
+  --ease:cubic-bezier(.4,0,.2,1);
+}
+html{text-rendering:optimizeLegibility;}
+
+/* ---- warm orange backdrop (kept per preference) ---- */
+body{
+  padding:0;min-height:100vh;
+  background:
+    radial-gradient(900px 640px at 78% -12%, #FFD7A6 0%, rgba(255,215,166,0) 58%),
+    linear-gradient(160deg,#FFC07E 0%,#F8964A 46%,#C7A35C 112%);
+}
+.bg-deco .spark{color:rgba(255,255,255,.62);animation:twinkleSoft 5s ease-in-out infinite;}
+.bg-deco .spark.big{color:rgba(255,255,255,.46);}
+@keyframes twinkleSoft{0%,100%{opacity:.28;transform:scale(.9);}50%{opacity:.7;transform:scale(1.05);}}
+
+/* ---- dominant phone: fixed design size, uniformly scaled by JS to
+       fill the viewport so the whole UI grows crisply & proportionally ---- */
+.phone{
+  width:390px;height:820px;
+  max-height:none;
+  transform:scale(var(--scale,1));
+  transform-origin:center center;
+  border-radius:46px;border-width:11px;
+  box-shadow:0 50px 100px rgba(30,40,20,.34), 0 16px 40px rgba(30,40,20,.20);
+}
+
+/* ---- smooth page transitions ---- */
+.screen.active{animation:screenIn .34s var(--ease) both;}
+@keyframes screenIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+
+/* ---- refined top bar + animated stats ---- */
+.statbar{padding:40px 18px 14px;border-bottom:1px solid rgba(40,33,26,.06);}
+.stat.streak,.stat.gems{transition:transform .2s var(--ease);}
+.stat.streak{animation:flameBob 2.8s ease-in-out infinite;}
+@keyframes flameBob{0%,100%{transform:translateY(0);}50%{transform:translateY(-1.5px);}}
+.gem-pop{animation:gemPop .42s var(--ease);}
+@keyframes gemPop{0%{transform:scale(1);}42%{transform:scale(1.16);}100%{transform:scale(1);}}
+.gem-toast{
+  position:absolute;right:22px;top:58px;z-index:130;pointer-events:none;
+  font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;color:#2F6BE0;
+  text-shadow:0 1px 2px rgba(255,255,255,.8);animation:gemToast 1.15s var(--ease) forwards;
+}
+@keyframes gemToast{0%{opacity:0;transform:translateY(8px);}22%{opacity:1;}100%{opacity:0;transform:translateY(-26px);}}
+
+/* ---- DASHBOARD: daily-goal progress card ---- */
+.goal-card{
+  margin:14px 14px 0;background:#fff;border:1px solid rgba(40,33,26,.06);
+  border-radius:var(--r-lg);padding:15px 16px;box-shadow:var(--sh-2);
+}
+.goal-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:11px;}
+.goal-label{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.95rem;letter-spacing:-.01em;}
+.goal-val{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.8rem;color:var(--sage-d);}
+.goal-bar{height:12px;border-radius:999px;background:#EEEBE3;overflow:hidden;box-shadow:inset 0 1px 2px rgba(40,33,26,.06);}
+.goal-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--sage),var(--sage-d));width:67%;animation:goalGrow 1.2s var(--ease) both;}
+@keyframes goalGrow{from{width:0;} to{width:67%;}}
+.goal-meta{display:flex;justify-content:space-between;margin-top:10px;font-size:.73rem;font-weight:700;color:#9a958c;}
+.goal-meta .pcent{color:var(--orange-d);}
+
+/* ---- premium cards + tasteful hover lift ---- */
+.lb-row,.settings-row,.chest-card{transition:transform .18s var(--ease),box-shadow .18s var(--ease);}
+.lb-row{box-shadow:var(--sh-1);border-color:rgba(40,33,26,.06);}
+.lb-row:hover{transform:translateY(-2px);box-shadow:var(--sh-2);}
+.settings-row{box-shadow:var(--sh-1);border-color:rgba(40,33,26,.06);}
+.settings-row:hover{transform:translateY(-2px);box-shadow:var(--sh-2);}
+.chest-card{box-shadow:var(--sh-2);}
+.chest-card:hover{transform:translateY(-3px);box-shadow:var(--sh-3);}
+.chest-card:active{transform:translateY(1px);box-shadow:var(--sh-1);}
+.profile-card{box-shadow:0 14px 30px rgba(240,118,42,.26);transition:transform .2s var(--ease),box-shadow .2s var(--ease);}
+.profile-card:hover{transform:translateY(-2px);box-shadow:0 20px 38px rgba(240,118,42,.32);}
+
+/* ---- refined leaderboard avatars + points ---- */
+.lb-avatar{box-shadow:inset 0 0 0 2px rgba(255,255,255,.65), var(--sh-1);}
+.lb-row.me .lb-avatar{box-shadow:inset 0 0 0 2px #fff, 0 0 0 2px var(--orange);}
+
+/* ---- navigation: real-app active indicator + touch feedback ---- */
+.bottomnav{padding:12px 6px 18px;border-top:1px solid rgba(40,33,26,.06);}
+.navbtn{transition:color .2s var(--ease),background .2s var(--ease),transform .14s var(--ease);border-radius:16px;}
+.navbtn:active{transform:scale(.9);}
+.navbtn.active{box-shadow:none;position:relative;}
+.navbtn.active::after{content:'';position:absolute;top:1px;left:50%;transform:translateX(-50%);width:18px;height:4px;border-radius:999px;background:var(--orange);}
+
+/* ---- lesson metadata chips (time · XP · difficulty) ---- */
+.lesson-meta{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 16px;}
+.lmeta{display:inline-flex;align-items:center;gap:5px;font-size:.72rem;font-weight:800;padding:6px 11px;border-radius:999px;background:var(--cream2);color:#6f6a61;border:1px solid rgba(40,33,26,.05);}
+.lmeta.xp{background:#FFF3E9;color:var(--orange-d);border-color:rgba(240,118,42,.12);}
+.lmeta.diff{background:#EAF3E1;color:var(--sage-d);border-color:rgba(126,154,111,.16);}
+
+/* ---- responsive: near full-screen on small devices ---- */
+@media (max-width:520px){
+  .phone{transform:none;width:100vw;height:100vh;border-radius:0;border-width:0;}
+  .notch{display:none;}
+  .bg-deco{display:none;}
+}
+
+/* ============================================================
+   ADDED — PET COACH (lessons guided by collectible pets) +
+   HOME MASCOT (fills empty path space, youth-friendly)
+   ============================================================ */
+.coach{display:flex;gap:11px;align-items:flex-start;margin:2px 0 16px;animation:fadeUp .4s var(--ease) both;}
+.coach-pet{width:64px;height:64px;flex-shrink:0;}
+.coach-bubble{
+  position:relative;flex:1;background:#fff;border:1px solid rgba(40,33,26,.07);
+  border-radius:16px;border-top-left-radius:5px;padding:13px 15px;box-shadow:var(--sh-2);
+  font-size:.9rem;line-height:1.5;color:#4a463f;
+}
+.coach-bubble::before{
+  content:'';position:absolute;left:-7px;top:15px;width:13px;height:13px;background:#fff;
+  border-left:1px solid rgba(40,33,26,.07);border-bottom:1px solid rgba(40,33,26,.07);
+  transform:rotate(45deg);
+}
+.coach-bubble p{margin:0 0 7px;} .coach-bubble p:last-child{margin:0;}
+.coach-bubble b{color:var(--orange-d);}
+.coach-bubble.ok{background:#EEF6E6;border-color:rgba(126,154,111,.3);}
+.coach-bubble.ok::before{background:#EEF6E6;border-color:rgba(126,154,111,.3);}
+.coach-bubble.ok b{color:var(--sage-d);}
+.coach-bubble.no{background:#FFF1E8;border-color:rgba(240,118,42,.22);}
+.coach-bubble.no::before{background:#FFF1E8;border-color:rgba(240,118,42,.22);}
+
+.quiz-kick{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;color:var(--sage-d);margin:4px 0 12px;}
+.quiz-explain{display:none;}
+.quiz-explain.show{display:block;animation:fadeUp .35s var(--ease) both;}
+
+/* home mascot coach + slogan in the empty path area */
+.path-coach{display:flex;align-items:center;gap:11px;margin-top:8px;padding:0 26px;max-width:340px;z-index:1;}
+.pc-pet{width:60px;height:60px;flex-shrink:0;}
+.pc-bubble{
+  position:relative;background:#fff;border:1px solid rgba(40,33,26,.07);border-radius:15px;
+  border-bottom-left-radius:5px;padding:11px 13px;font-size:.82rem;font-weight:700;line-height:1.4;
+  color:#5a554c;box-shadow:var(--sh-2);
+}
+.pc-bubble::before{content:'';position:absolute;left:-6px;bottom:13px;width:12px;height:12px;background:#fff;border-left:1px solid rgba(40,33,26,.07);border-top:1px solid rgba(40,33,26,.07);transform:rotate(-45deg);}
+.path-slogan{margin-top:16px;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.82rem;color:#9b8c6f;letter-spacing:.02em;z-index:1;}
+.path-slogan b{color:var(--orange-d);}
+
+/* path companions + stickers that fill the empty side margins */
+.path-buddy{position:absolute;width:74px;height:74px;z-index:1;pointer-events:none;}
+.bud-left{left:8px;top:15%;}
+.bud-right{right:8px;top:49%;}
+.buddy-tag{
+  position:absolute;left:50%;bottom:-14px;transform:translateX(-50%);white-space:nowrap;
+  font-family:'Baloo 2',sans-serif;font-weight:800;font-size:.58rem;letter-spacing:.03em;
+  color:var(--sage-d);background:#fff;border:1px solid rgba(40,33,26,.07);
+  padding:2px 8px;border-radius:999px;box-shadow:var(--sh-1);
+}
+.path-sticker{position:absolute;z-index:1;pointer-events:none;font-size:1.4rem;
+  filter:drop-shadow(0 3px 4px rgba(0,0,0,.12));animation:petFloat 3.2s ease-in-out infinite;}
+.st-a{left:34px;top:38%;animation-delay:.4s;}
+.st-b{right:42px;top:22%;animation-delay:.9s;}
+.st-c{left:54px;top:64%;animation-delay:1.3s;}
+
+/* 3D coach art: kept separate from the SVG collection so every pet still
+   has a lightweight animated in-app model. */
+.home-foxy-3d{position:absolute;right:-18px;bottom:12px;width:132px;height:176px;object-fit:contain;z-index:1;pointer-events:none;filter:drop-shadow(0 12px 10px rgba(100,66,35,.18));animation:heroFloat 3.4s ease-in-out infinite;}
+@keyframes heroFloat{0%,100%{transform:translateY(0) rotate(1deg)}50%{transform:translateY(-8px) rotate(-1deg)}}
+.coach-pet.hero-model{width:76px;height:76px;border-radius:20px;overflow:hidden;background:linear-gradient(145deg,#FFF4EB,#EAF3E1);box-shadow:0 7px 15px rgba(44,44,44,.12);}
+.coach-pet.hero-model img{width:100%;height:100%;object-fit:contain;transform:scale(1.18) translateY(4px);}
+.lesson-stage{margin:10px 0 16px;padding:15px;border-radius:18px;background:linear-gradient(145deg,#fff,#FFF8F1);border:1px solid rgba(240,118,42,.14);box-shadow:var(--sh-1);}
+.stage-label{font-family:'Baloo 2',sans-serif;font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--orange-d);margin-bottom:8px;}
+.reveal-card,.decision-card{background:#fff;border:2px solid var(--gray);border-radius:15px;padding:15px;text-align:left;width:100%;font:700 .88rem 'Nunito',sans-serif;color:var(--charcoal);cursor:pointer;}
+.reveal-card.open{border-color:var(--sage);background:#F1F7EB;}.reveal-answer{display:none;margin-top:10px;font-size:.84rem;line-height:1.45;color:#5b6553}.reveal-card.open+.reveal-answer{display:block;animation:fadeUp .25s ease both;}
+.slider-readout{display:flex;justify-content:space-between;align-items:center;margin:9px 0;font:800 1.2rem 'Baloo 2',sans-serif;color:var(--orange-d)}
+.range{width:100%;accent-color:var(--orange);}.hint{font-size:.78rem;color:#777168;line-height:1.45}.match-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.match-column{display:grid;gap:8px;align-content:start}.match-label{font:800 .62rem 'Baloo 2',sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--sage-d);padding:0 3px}.match-chip{border:2px solid var(--gray);background:#fff;border-radius:12px;padding:11px 8px;font:800 .75rem 'Nunito',sans-serif;cursor:pointer;min-height:52px}.match-chip.selected{border-color:var(--orange);background:#FFF1E8;box-shadow:0 3px 0 #F6C9A9}.match-chip.matched{border-color:var(--sage);background:#EDF5E8;color:var(--sage-d);pointer-events:none}.match-chip.no-match{border-color:#E08A8A;background:#FBE6E6;animation:matchNo .35s ease}.match-status{margin:12px 0 0;text-align:center;font-size:.78rem;font-weight:800;color:#777168}.match-status b{color:var(--orange-d)}@keyframes matchNo{50%{transform:translateX(-4px)}100%{transform:translateX(0)}}
+.summary-list{display:grid;gap:9px;margin:12px 0}.summary-item{background:#fff;border-left:5px solid var(--sage);border-radius:12px;padding:10px 12px;font-size:.83rem;line-height:1.4}.completion-perks{display:flex;justify-content:center;gap:7px;flex-wrap:wrap;margin:0 0 15px}.perk{background:#FFF3E9;color:var(--orange-d);border-radius:999px;padding:6px 9px;font-size:.7rem;font-weight:800}
+.plan-card{box-shadow:0 4px 0 #8DA57D}.plan-card>b{display:block;font:800 1.15rem 'Baloo 2';color:var(--sage-d)}.plan-card .premium-perks{display:grid;gap:5px;margin:10px 0;color:#5d5a53;font-size:.76rem;font-weight:700}.plan-card .equip-btn{padding:9px 15px;font-family:'Baloo 2'}#gemStore{margin-top:0;background:linear-gradient(155deg,#fff,#FFF8F1);border:1px solid #F3DCC7;box-shadow:0 4px 0 #E8D9C9}#gemStore>b{display:block;font:800 1.12rem 'Baloo 2';color:var(--orange-d)}#gemStore p{margin:3px 0 0;color:#766f65;font-size:.78rem}.gem-packs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}.gem-packs button{border:2px solid #F2D7C0;border-radius:16px;background:linear-gradient(160deg,#FFF9F3,#FEEBDC);padding:9px 4px 10px;color:var(--charcoal);font-family:'Baloo 2';font-weight:800;box-shadow:0 4px 0 #E5C7AA;transition:transform .16s,box-shadow .16s}.gem-packs button:nth-child(2){background:linear-gradient(160deg,#F4F8FF,#E3EDFF);border-color:#C8D9FA;box-shadow:0 4px 0 #ABC4F1}.gem-packs button:nth-child(3){background:linear-gradient(160deg,#FFF9E5,#FFF0BB);border-color:#F0D78A;box-shadow:0 4px 0 #DDBF63}.gem-packs button:active{transform:translateY(4px);box-shadow:none}.gem-pack-name{display:block;color:#8E6750;font-size:.58rem;letter-spacing:.07em;text-transform:uppercase}.gem-packs b{display:block;color:#2F6BE0;font-size:1.06rem;line-height:1.05}.gem-packs small{display:block;color:#5f625f;font-family:'Baloo 2';font-size:.68rem;margin-top:3px}.gem-art{display:block;height:31px;margin:auto;font-style:normal;background:none;filter:none;clip-path:none;width:auto!important}.gem-art::after{content:'💎';font-size:1.65rem;line-height:31px}.gem-art.two::after{content:'💎💎';font-size:1.24rem}.gem-art.three::after{content:'💎💎💎';font-size:1rem;letter-spacing:-.32rem}.daily-card .cta,.feature-card .cta{margin-top:12px;text-align:center;font-family:'Baloo 2';letter-spacing:.06em}.daily-note{font-size:.72rem;color:#7a746a;margin:3px 0}.premium-compare{display:grid;grid-template-columns:1fr 1fr;gap:10px;text-align:left;font-size:.75rem}.premium-compare div{padding:10px;border-radius:12px;background:#FFF4EC}.premium-compare div:last-child{background:#EAF3E1}.premium-compare p{margin:6px 0}
+.daily-card .cta:disabled{opacity:.55;cursor:default;box-shadow:none}#dailyClaim{display:none}#featureArt:empty{display:none}.daily-grid button.daily-day{border:0;font-family:'Baloo 2',sans-serif}.daily-grid button.daily-day:disabled{opacity:1;cursor:default}.daily-day.claimable{cursor:pointer;box-shadow:0 4px 0 #C8951A;animation:claimPulse 1.6s ease-in-out infinite}@keyframes claimPulse{50%{transform:translateY(-3px) scale(1.04)}}
+/* Small, non-blocking daily login reward on the learning screen. */
+.login-bonus{display:flex;align-items:center;justify-content:center;gap:8px;width:calc(100% - 28px);margin:10px 14px 0;border:0;border-radius:14px;padding:10px 12px;background:linear-gradient(135deg,#FFF0B8,#FFE3A3);box-shadow:0 4px 0 #D6A83B;color:#76540C;font:900 .78rem 'Baloo 2',sans-serif;letter-spacing:.02em;cursor:pointer;transition:transform .18s,opacity .25s}.login-bonus:active{transform:translateY(4px);box-shadow:none}.login-bonus.claimed{background:#EAF3E1;color:#5D7650;box-shadow:0 3px 0 #9CAF88;cursor:default}.login-bonus[hidden]{display:none}
+/* ---------- KNOWLEDGE DUELS ---------- */
+#screen-duel{background:radial-gradient(110% 40% at 50% 0,#EEF5FF 0%,rgba(238,245,255,0) 60%),var(--cream)}.bottomnav{gap:1px}.bottomnav .navbtn{padding:6px 7px;flex:1;min-width:0}.duel-card{margin:14px;background:#fff;border:1px solid var(--gray);border-radius:20px;padding:15px;box-shadow:0 4px 0 #E8E2D7}.duel-status{display:flex;justify-content:space-between;gap:9px;align-items:center}.duel-elo{font:800 1.05rem 'Baloo 2';color:var(--purple)}.duel-elo small{display:block;font:700 .62rem 'Nunito';color:#7a746a}.duel-arena{margin:14px 0 0;padding:13px;border-radius:17px;background:linear-gradient(145deg,#FFF5E8,#F0F6EA)}.duel-fighters{display:grid;grid-template-columns:1fr auto 1fr;gap:7px;align-items:center;text-align:center}.duel-fighter{min-width:0;font-size:.76rem;font-weight:900}.duel-fighter small{display:block;color:#777168;font-size:.62rem;font-weight:700;margin-top:2px}.duel-squad{display:flex;justify-content:center;gap:2px;margin-top:6px;min-height:35px}.duel-squad img{width:32px;height:32px;object-fit:contain;background:#fff;border:2px solid var(--orange);border-radius:50%;animation:petFloat 2.5s ease-in-out infinite}.duel-squad.opponent img{border-color:var(--purple);background:#F8EFFF}.duel-vs{font:900 1rem 'Baloo 2';color:var(--orange-d)}.health-line{display:flex;gap:5px;align-items:center;margin:14px 2px 5px;font:800 .65rem 'Nunito'}.health-bar{height:12px;flex:1;background:#E7E3DD;border-radius:99px;overflow:hidden}.health-bar i{display:block;height:100%;width:100%;background:linear-gradient(90deg,var(--sage),#BDDAA7);transition:width .3s}.health-bar.enemy i{background:linear-gradient(90deg,#C9A2E4,var(--purple))}.duel-question{margin:0 14px 14px;padding:16px;background:#fff;border:1px solid var(--gray);border-radius:19px;text-align:center}.duel-round{font:800 .63rem 'Baloo 2';letter-spacing:.08em;color:var(--sage-d);text-transform:uppercase}.duel-timer{float:right;background:#FFF0E7;color:var(--orange-d);border-radius:9px;padding:3px 7px;font:900 .7rem 'Baloo 2'}.duel-question h2{clear:both;font:800 1.1rem 'Baloo 2';margin:11px 0 6px}.duel-question p{font-size:.84rem;line-height:1.4;margin:0 0 12px}.duel-choices{display:grid;gap:8px;text-align:left}.duel-choice{border:2px solid var(--gray);border-radius:13px;padding:10px;background:#fff;color:var(--charcoal);font:800 .76rem 'Nunito';text-align:left}.duel-choice:not(:disabled){cursor:pointer}.duel-choice:not(:disabled):active{transform:scale(.98)}.duel-choice.correct{border-color:var(--sage);background:#EDF6E9}.duel-choice.wrong{border-color:#E58B8B;background:#FFF0F0}.duel-feedback{min-height:20px;margin:10px 0 0;font-size:.74rem;font-weight:800;color:#716B62}.duel-start{width:calc(100% - 28px);margin:0 14px 16px;border:0;border-radius:14px;padding:13px;background:var(--orange);box-shadow:0 4px 0 var(--orange-d);color:#fff;font:900 .9rem 'Baloo 2';letter-spacing:.04em}.duel-start:active{transform:translateY(4px);box-shadow:none}.board-modes{display:flex;gap:7px;margin:10px 16px 0}.board-mode{flex:1;border:1px solid var(--gray);border-radius:10px;padding:7px;background:#fff;color:#777168;font:800 .68rem 'Baloo 2'}.board-mode.active{background:#FFF0E7;color:var(--orange-d);border-color:#F5C9A8}
+/* ---- Duel polish: a collectible-pet arena rather than a generic card ---- */
+#screen-duel{background:radial-gradient(100% 34% at 50% 0,#FFF1D8 0%,rgba(255,241,216,0) 62%),radial-gradient(90% 30% at 50% 100%,#EAF4E5 0%,rgba(234,244,229,0) 60%),var(--cream)}
+#screen-duel .screen-head{padding-bottom:10px}.duel-card{margin:12px 14px 16px;padding:14px;background:linear-gradient(160deg,#fff,#FFF9F0);border:2px solid #F2DCC5;box-shadow:0 5px 0 #E7CDB3}.duel-status{padding:1px 3px 11px;border-bottom:1px dashed #E7D7C5}.duel-status>b,#duelRank{font:900 1.12rem 'Baloo 2';color:#7D5C36}.duel-elo{padding:7px 10px;border-radius:13px;background:#F1EAFA;color:#8A5AB3}.duel-elo small{font-weight:800}.duel-arena{margin-top:12px;padding:15px 10px 12px;background:linear-gradient(145deg,#FFF1D8,#EDF6E8);border:1px solid #E5CFAB;box-shadow:inset 0 1px 0 #fff}.duel-fighters{grid-template-columns:1fr 42px 1fr;gap:4px}.duel-fighter{padding:7px 2px;border-radius:15px;background:rgba(255,255,255,.62)}.duel-fighter:first-child{border:1px solid #F6C6A5}.duel-fighter:last-child{border:1px solid #D9C7E8}.duel-fighter>span{font:900 .82rem 'Baloo 2';color:#5B5146}.duel-vs{width:36px;height:36px;display:grid;place-items:center;border-radius:50%;background:var(--orange);box-shadow:0 3px 0 var(--orange-d);color:#fff;font-size:.78rem}.duel-squad{gap:5px;min-height:52px;margin-top:7px;align-items:center}.duel-pet-chip{position:relative;display:inline-grid;place-items:center;width:45px;height:45px;border-radius:15px;background:#fff;border:2px solid var(--orange);box-shadow:0 3px 0 #EDC5A6}.duel-pet-chip img{width:39px!important;height:39px!important;border:0!important;border-radius:0!important;background:transparent!important;animation:petFloat 2.5s ease-in-out infinite}.duel-pet-chip.rare{border-color:#5B8DEF;background:#F1F6FF}.duel-pet-chip.epic{border-color:#B36BD4;background:#FAF0FF}.duel-pet-chip.legendary,.duel-pet-chip.secret{border-color:#E0AF20;background:#FFF8D9}.duel-pet-level{position:absolute;right:-5px;bottom:-5px;min-width:20px;padding:1px 3px;border-radius:8px;background:#7E9A6F;color:#fff;font:900 .5rem 'Baloo 2';line-height:1.35}.duel-squad.opponent .duel-pet-chip{border-color:#B36BD4;background:#FAF0FF}.duel-empty{font:800 .62rem 'Nunito';color:#84796B;line-height:1.25}.health-line{margin:13px 4px 1px;padding:7px 8px;border-radius:12px;background:rgba(255,255,255,.7)}.health-bar{height:10px}.duel-question{margin:0 14px 14px;border:2px solid #E8E0D5;box-shadow:0 4px 0 #EEE7DC}.duel-start{background:linear-gradient(135deg,#FF9B4E,#F0762A);box-shadow:0 5px 0 #CD5E21}.duel-choice{border-color:#E7DED3;box-shadow:0 2px 0 #E9E1D8}.duel-choice:not(:disabled):hover{border-color:var(--orange);background:#FFF7F0}
+</style>
+</head>
+<body>
+
+<div class="bg-deco" aria-hidden="true">
+  <span class="spark s1 big">✦</span>
+  <span class="spark s2">✦</span>
+  <span class="spark s3">✦</span>
+  <span class="spark s4 big">✦</span>
+  <span class="spark s5">✦</span>
+  <span class="spark s6">✦</span>
+</div>
+
+<div class="phone">
+  <div class="notch"></div>
+  <div class="demo-toast" id="demoToast"></div>
+  <div class="onboard" id="onboard"><div class="onboard-card"><h1>Avanza</h1><p>Choose your language</p><button type="button" data-onboard="es" onclick="window.chooseAvanzaLanguage('es')">Español</button><button type="button" data-onboard="en" onclick="window.chooseAvanzaLanguage('en')">English</button></div></div>
+  <!-- Invisible legacy hooks retained only so older language rendering remains safe. -->
+  <div id="dailyModal" style="display:none!important" aria-hidden="true"><button id="dailyClose" type="button"></button><h2></h2><p></p><div id="dailyGrid"></div><p class="daily-note"></p><button id="dailyClaim" type="button"></button></div>
+  <div class="feature-modal" id="featureModal"><div class="feature-card"><button id="featureClose" type="button" aria-label="Close">✕</button><div id="featureArt">✨</div><h2 id="featureTitle"></h2><p id="featureText"></p><button class="cta" id="featureOkay">Got it!</button></div></div>
+
+  <!-- ============ HOME / LEARNING PATH ============ -->
+  <div class="screen active" id="screen-home">
+    <div class="statbar">
+      <div class="brand">
+        <span class="brand-mark"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="5,13 12,7 19,13"/><polyline points="5,17 12,11 19,17"/></svg></span>
+        <span class="brand-name">Avanza</span>
+      </div>
+      <div class="stat-group">
+        <div class="stat streak">🔥 4</div>
+        <div class="stat gems" id="gemStat">💎 500</div>
+        <button class="lang-pill home-lang" id="homeLangPill" aria-label="Cambiar a inglés">🌐 ES</button>
+      </div>
+    </div>
+    <button class="login-bonus" id="loginBonus" type="button" hidden>🎁 Claim today’s 25 gem login bonus</button>
+    <div class="unit-header">
+      <div>
+        <div class="label" id="homeUnit">UNIDAD 1</div>
+        <h2 id="homeTitle">Lo básico del crédito</h2>
+        <p id="homeSub">Usa términos reales, gana confianza</p>
+      </div>
+      <div class="book-btn">📖</div>
+    </div>
+    <div class="goal-card">
+      <div class="goal-top">
+        <span class="goal-label" id="goalLabel">Meta diaria</span>
+        <span class="goal-val" id="goalVal">2 / 3 lecciones</span>
+      </div>
+      <div class="goal-bar"><div class="goal-fill"></div></div>
+      <div class="goal-meta">
+        <span id="goalStreak">🔥 racha de 4 días</span>
+        <span class="pcent" id="goalPercent">67% completado</span>
+      </div>
+    </div>
+    <div class="squad-card"><div><b>Active squad</b><small>Equip up to 3 pets for bonuses</small></div><div class="active-pets" id="activePets" aria-label="Active pets"></div></div>
+    <div class="path">
+      <span class="blob blob-a"></span>
+      <span class="blob blob-b"></span>
+      <span class="path-buddy bud-left" id="budLeft"></span>
+      <span class="path-buddy bud-right" id="budRight"></span>
+      <span class="path-sticker st-a">⭐</span>
+      <span class="path-sticker st-b">🪙</span>
+      <span class="path-sticker st-c">✨</span>
+      <div class="node done">📘</div>
+      <div class="node done alt">📘</div>
+      <div class="node current" id="startNode">
+        <div class="start-bubble"><span id="startLabel">INICIAR</span><span class="start-prog"></span></div>
+        <div class="pulse-ring"></div>
+        ⭐
+      </div>
+      <div class="node locked alt2"><span class="lock">🔒</span></div>
+      <div class="node locked"><span class="lock">🔒</span></div>
+      <div class="node locked alt"><span class="lock">🔒</span></div>
+      <div class="path-coach">
+        <div class="pc-pet" id="mascotPet"></div>
+        <div class="pc-bubble" id="homeCoach">¡Sigue tu racha! 🔥 Cada lección te acerca a tu libertad financiera.</div>
+      </div>
+      <div class="path-slogan" id="homeSlogan">Aprende jugando · <b>Avanza</b> de verdad</div>
+    </div>
+  </div>
+
+  <!-- ============ LEADERBOARD ============ -->
+  <div class="screen" id="screen-board">
+    <div class="screen-head">
+      <h1>Leaderboard</h1>
+      <p>See how you stack up this week</p>
+    </div>
+    <div class="social-bar"><div><b>Friends</b><small>Build your learning squad</small></div><button class="social-btn" id="addFriendBtn">＋ Add friend</button></div>
+    <div class="lb-tabs">
+      <div class="lb-tab active">Friends</div>
+      <div class="lb-tab">Global</div>
+    </div>
+    <div class="board-modes"><button class="board-mode active" data-board-mode="gems">💎 Gems</button><button class="board-mode" data-board-mode="elo">⚔ Duel ELO</button></div>
+    <div class="lb-list">
+      <div class="lb-row"><div class="lb-rank r1">1</div><div class="lb-avatar" style="background:#FFE1CC;">🦊</div><div class="lb-name">Marisol R.</div><div class="lb-pts">💎 1,240</div></div>
+      <div class="lb-row"><div class="lb-rank r2">2</div><div class="lb-avatar" style="background:#DCE9FA;">🐨</div><div class="lb-name">Diego P.</div><div class="lb-pts">💎 1,180</div></div>
+      <div class="lb-row"><div class="lb-rank r3">3</div><div class="lb-avatar" style="background:#E3F3D9;">🐸</div><div class="lb-name">Yamilet C.</div><div class="lb-pts">💎 1,065</div></div>
+      <div class="lb-row me"><div class="lb-rank">4</div><div class="lb-avatar" style="background:#F3E3FB;">🐰</div><div class="lb-name">You</div><div class="lb-pts">💎 500</div></div>
+      <div class="lb-row"><div class="lb-rank">5</div><div class="lb-avatar" style="background:#FFF1CC;">🐯</div><div class="lb-name">Kevin T.</div><div class="lb-pts">💎 470</div></div>
+      <div class="lb-row"><div class="lb-rank">6</div><div class="lb-avatar" style="background:#FFE1E1;">🦦</div><div class="lb-name">Ana L.</div><div class="lb-pts">💎 410</div></div>
+    </div>
+  </div>
+
+  <!-- ============ KNOWLEDGE DUEL ============ -->
+  <div class="screen" id="screen-duel">
+    <div class="screen-head"><h1 id="duelTitle">Knowledge Duel</h1><p id="duelSub">Race through financial questions with your active squad.</p></div>
+    <div class="duel-card"><div class="duel-status"><div><b id="duelRank">Bronze II</b><small id="duelRankSub">Your duel rating</small></div><div class="duel-elo"><span id="duelElo">1,000</span><small>ELO</small></div></div><div class="duel-arena"><div class="duel-fighters"><div class="duel-fighter"><span id="duelYou">You</span><small id="duelSquadLabel">Active squad</small><div class="duel-squad" id="duelSquad"></div></div><div class="duel-vs">VS</div><div class="duel-fighter"><span id="duelOpponent">Practice Bot</span><small id="duelOpponentElo">1,020 ELO</small><div class="duel-squad opponent" aria-label="Practice bot squad"><span class="duel-pet-chip legendary"><img src="assets/pets/aurora.png" alt="Aurora"><i class="duel-pet-level">Lv. 4</i></span><span class="duel-pet-chip rare"><img src="assets/pets/rana.png" alt="Rana"><i class="duel-pet-level">Lv. 3</i></span><span class="duel-pet-chip rare"><img src="assets/pets/rico.png" alt="Rico"><i class="duel-pet-level">Lv. 3</i></span></div></div></div><div class="health-line"><span id="duelYouHp">100</span><div class="health-bar"><i id="duelYouBar"></i></div><div class="health-bar enemy"><i id="duelEnemyBar"></i></div><span id="duelEnemyHp">100</span></div></div></div>
+    <section class="duel-question"><span class="duel-round" id="duelRound">10-question duel</span><span class="duel-timer" id="duelTimer">10s</span><h2 id="duelQuestionTitle">Ready to duel?</h2><p id="duelQuestion">Choose Start Duel. Correct answers move your squad forward; wrong answers give your opponent room to advance.</p><div class="duel-choices" id="duelChoices"></div><div class="duel-feedback" id="duelFeedback"></div></section>
+    <button class="duel-start" id="duelStart">START DUEL</button>
+  </div>
+
+  <!-- ============ CHESTS / PLUSHIES ============ -->
+  <div class="screen" id="screen-chests">
+    <div class="screen-head">
+      <h1>Chests</h1>
+      <p>Open chests to collect plushie friends</p>
+    </div>
+    <div class="chest-grid">
+      <div class="chest-card" data-chest="0"><span class="chest-emoji">🎁</span><div class="chest-title">Lesson Chest</div><div class="chest-sub">Ready to open</div><div class="chest-req">FREE</div></div>
+      <div class="chest-card" data-chest="1"><span class="chest-emoji">🎁</span><div class="chest-title">Streak Chest</div><div class="chest-sub">7-day reward</div><div class="chest-req">FREE</div></div>
+      <div class="chest-card" data-chest="2"><span class="chest-emoji">🎁</span><div class="chest-title">Gem Chest</div><div class="chest-sub">Needs 750 gems</div><div class="chest-req gems">💎 750</div></div>
+      <div class="chest-card" data-chest="3"><span class="chest-emoji">🎁</span><div class="chest-title">Mystery Chest</div><div class="chest-sub">Complete Unit 2</div><div class="chest-req gems">UNIT 2</div></div>
+    </div>
+    <button class="trade-btn" id="tradeBtn">🔄 Trade pets <span>Coming soon</span></button>
+    <div class="collection-title">Your Collection</div>
+    <div class="plushie-grid" id="plushieGrid"><!-- rendered by JS --></div>
+
+    <!-- legacy reward modal kept for structure; hatch overlay now drives reveals -->
+    <div class="modal-overlay" id="rewardModal">
+      <div class="modal-card">
+        <div class="modal-emoji" id="rewardEmoji">🐯</div>
+        <div class="modal-title" id="rewardTitle">You got Tigo!</div>
+        <div class="modal-sub" id="rewardSub">Rare plushie · +50 gems</div>
+        <button class="modal-btn" id="rewardClose">Nice!</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SETTINGS / MORE ============ -->
+  <div class="screen" id="screen-settings">
+    <div class="screen-head">
+      <h1>Profile</h1>
+      <p>Manage your account and preferences</p>
+    </div>
+    <div class="profile-card">
+      <div class="profile-avatar">🐰</div>
+      <div>
+        <div class="profile-name">Jacob B.</div>
+        <div class="profile-sub" id="profileSub">🔥 4-day streak · 💎 500 gems</div>
+      </div>
+    </div>
+    <div class="settings-list">
+      <div class="settings-row"><span class="icon">🌐</span><span class="label">Language</span><span class="val">Español</span></div>
+      <div class="settings-row"><span class="icon">🔔</span><span class="label">Daily reminders</span><div class="toggle on" id="toggleNotif"></div></div>
+      <div class="settings-row"><span class="icon">🔊</span><span class="label">Sound effects</span><div class="toggle on" id="toggleSound"></div></div>
+      <div class="settings-row"><span class="icon">🎯</span><span class="label">Daily goal</span><span class="val">5 min/day</span></div>
+      <div class="settings-row" id="learningStatsRow"><span class="icon">📈</span><span class="label">Learning stats</span><span class="val">Unit 1</span></div>
+      <div class="settings-row"><span class="icon">🚪</span><span class="label">Log out</span></div>
+    </div>
+    <div class="plan-card"><b>⭐ Avanza Premium</b><p>Make every learning day a little brighter.</p><div class="premium-perks"><span>🚫 No ads, ever</span><span>💎 Extra daily gems</span><span>🧠 Improved learning paths</span><span>🛡️ Streak protection + monthly pet</span></div><button class="equip-btn" id="premiumBtn">Explore Premium</button></div><div class="card" id="gemStore"><b>💎 Gem packs</b><p>Top up gems to unlock more chests.</p><div class="gem-packs"><button data-gems="100"><i class="gem-art one"></i><span class="gem-pack-name">Pocket</span><b>100</b><small>$0.99</small></button><button data-gems="500"><i class="gem-art two"></i><span class="gem-pack-name">Stash</span><b>500</b><small>$3.99</small></button><button data-gems="1200"><i class="gem-art three"></i><span class="gem-pack-name">Treasure</span><b>1,200</b><small>$7.99</small></button></div></div>
+  </div>
+
+  <!-- ============ LESSON OVERLAY ============ -->
+  <div class="lesson-overlay" id="lessonOverlay">
+    <div class="lesson-top">
+      <button class="lesson-close" id="lessonClose">✕</button>
+      <div class="lesson-prog"><div class="lesson-prog-fill" id="progFill"></div></div>
+      <button class="lang-pill" id="langPill">🌐 ES</button>
+    </div>
+    <div class="lesson-body" id="lessonBody"></div>
+  </div>
+
+  <!-- ============ EGG HATCH OVERLAY ============ -->
+  <div class="egg-overlay" id="eggOverlay">
+    <div class="egg-stage" id="eggStage">
+      <div class="egg-shell" id="eggShell"></div>
+      <div class="pet-reveal" id="petReveal"></div>
+    </div>
+    <div class="reveal-info" id="revealInfo">
+      <div class="modal-title" id="eggName"></div>
+      <div class="modal-sub" id="eggRarity"></div>
+      <div class="gem-badge-gold" id="eggGems"></div>
+      <button class="modal-btn" id="eggNice">Nice!</button>
+    </div>
+  </div>
+
+  <!-- ============ BOTTOM NAV ============ -->
+  <div class="bottomnav">
+    <button class="navbtn active" data-screen="screen-home"><span class="icon">🏠</span>Learn</button>
+    <button class="navbtn" data-screen="screen-board"><span class="icon">🏆</span>Ranks</button>
+    <button class="navbtn" data-screen="screen-duel"><span class="icon">⚔️</span>Duel</button>
+    <button class="navbtn" data-screen="screen-chests"><span class="icon">🥚</span>Pets</button>
+    <button class="navbtn" data-screen="screen-settings"><span class="icon">⋯</span>More</button>
+  </div>
+</div>
+
+<script>
+(function(){
+'use strict';
+
+/* ---------- NAV ---------- */
+var navBtns = document.querySelectorAll('.navbtn');
+var screens = document.querySelectorAll('.screen');
+navBtns.forEach(function(btn){
+  btn.addEventListener('click', function(){
+    navBtns.forEach(function(b){ b.classList.remove('active'); });
+    screens.forEach(function(s){ s.classList.remove('active'); });
+    btn.classList.add('active');
+    document.getElementById(btn.getAttribute('data-screen')).classList.add('active');
+  });
+});
+
+/* ---------- TOGGLES ---------- */
+document.querySelectorAll('.toggle').forEach(function(t){
+  t.addEventListener('click', function(){ t.classList.toggle('on'); });
+});
+
+/* ---------- HOME LANGUAGE ---------- */
+/* Single persistent language preference shared by home, lessons and reloads. */
+var appLang=localStorage.getItem('avanza-language')||'es';
+var homeLang=appLang;
+/* Startup fallback: the first two buttons must always be able to dismiss this overlay. */
+window.chooseAvanzaLanguage=function(next){appLang=next;homeLang=next;localStorage.setItem('avanza-language',next);document.getElementById('onboard').classList.add('hide');document.getElementById('dailyModal').classList.add('show');if(typeof renderHomeLanguage==='function')renderHomeLanguage();if(typeof renderUniversalLanguage==='function')renderUniversalLanguage();};
+function setAppLanguage(next){appLang=next;homeLang=next;localStorage.setItem('avanza-language',next);if(typeof renderUniversalLanguage==='function')renderUniversalLanguage();}
+var UI_COPY={
+  es:{boardTitle:'Clasificación',boardSub:'Mira cómo vas esta semana',friends:'Amigos',global:'Global',chestsTitle:'Cofres',chestsSub:'Abre cofres para coleccionar amigos',chestTitles:['Cofre de lección','Cofre de racha','Cofre de gemas','Cofre misterioso'],chestSubs:['Listo para abrir','Recompensa de 7 días','Necesita 750 gemas','Completa la Unidad 2'],chestReq:['GRATIS','GRATIS','💎 750','UNIDAD 2'],collection:'Tu colección',profileTitle:'Perfil',profileSub:'Administra tu cuenta y preferencias',settings:['Idioma','Recordatorios diarios','Efectos de sonido','Meta diaria','Mejorar a Premium','Cerrar sesión'],settingsVals:['Español','','','5 min/día','$4.99/mes',''],nav:['Aprender','Rangos','Duelos','Mascotas','Más'],nice:'¡Genial!'},
+  en:{boardTitle:'Leaderboard',boardSub:'See how you stack up this week',friends:'Friends',global:'Global',chestsTitle:'Pets',chestsSub:'Open eggs to collect plushie friends',chestTitles:['Lesson Chest','Streak Chest','Gem Chest','Mystery Chest'],chestSubs:['Ready to open','7-day reward','Needs 750 gems','Complete Unit 2'],chestReq:['FREE','FREE','💎 750','UNIT 2'],collection:'Your Collection',profileTitle:'Profile',profileSub:'Manage your account and preferences',settings:['Language','Daily reminders','Sound effects','Daily goal','Upgrade to Premium','Log out'],settingsVals:['English','','','5 min/day','$4.99/mo',''],nav:['Learn','Ranks','Duels','Pets','More'],nice:'Nice!'}
+};
+/* The Premium card below remains the single comparison entry point. */
+UI_COPY.en.settings[4]='Learning stats';UI_COPY.en.settingsVals[4]='Unit 1';
+UI_COPY.es.settings[4]='Estadísticas de aprendizaje';UI_COPY.es.settingsVals[4]='Unidad 1';
+function renderUniversalLanguage(){
+  var c=UI_COPY[appLang], q=function(s){return document.querySelector(s)}, qa=function(s){return document.querySelectorAll(s)};
+  q('#screen-board .screen-head h1').textContent=c.boardTitle;q('#screen-board .screen-head p').textContent=c.boardSub;
+  var tabs=qa('#screen-board .lb-tab');tabs[0].textContent=c.friends;tabs[1].textContent=c.global;
+  q('#screen-chests .screen-head h1').textContent=c.chestsTitle;q('#screen-chests .screen-head p').textContent=c.chestsSub;
+  qa('.chest-title').forEach(function(e,i){e.textContent=c.chestTitles[i]});qa('.chest-sub').forEach(function(e,i){e.textContent=c.chestSubs[i]});qa('.chest-req').forEach(function(e,i){e.textContent=c.chestReq[i]});q('.collection-title').textContent=c.collection;
+  q('#screen-settings .screen-head h1').textContent=c.profileTitle;q('#screen-settings .screen-head p').textContent=c.profileSub;
+  qa('#screen-settings .settings-row').forEach(function(row,i){var label=row.querySelector('.label'),val=row.querySelector('.val');if(label)label.textContent=c.settings[i];if(val&&c.settingsVals[i])val.textContent=c.settingsVals[i]});
+  qa('.navbtn').forEach(function(b,i){var icon=b.querySelector('.icon').textContent,labels=c.nav||[];b.innerHTML='<span class="icon">'+icon+'</span>'+(labels[i]||['Learn','Ranks','Duels','Pets','More'][i])});
+  q('#eggNice').textContent=c.nice;
+  var profile=q('#profileSub');if(profile&&typeof gems==='number')profile.textContent='🔥 4-'+(appLang==='es'?'días de racha':'day streak')+' · 💎 '+gems+' '+(appLang==='es'?'gemas':'gems');
+}
+var HOME_COPY={
+  es:{unit:'UNIDAD 1',title:'Lo básico del crédito',sub:'Usa términos reales, gana confianza',goal:'Meta diaria',goalVal:'2 / 3 lecciones',streak:'🔥 racha de 4 días',percent:'67% completado',start:'INICIAR',coach:'¡Sigue tu racha! 🔥 Cada lección te acerca a tu libertad financiera.',slogan:'Aprende jugando · <b>Avanza</b> de verdad'},
+  en:{unit:'UNIT 1',title:'Credit Basics',sub:'Use real terms, build confidence',goal:'Daily goal',goalVal:'2 / 3 lessons',streak:'🔥 4-day streak',percent:'67% complete',start:'START',coach:'Keep your streak going! 🔥 Every lesson brings you closer to financial freedom.',slogan:'Learn by playing · <b>Move forward</b> for real'}
+};
+function renderHomeLanguage(){
+  var c=HOME_COPY[homeLang];
+  document.getElementById('homeUnit').textContent=c.unit;
+  document.getElementById('homeTitle').textContent=c.title;
+  document.getElementById('homeSub').textContent=c.sub;
+  document.getElementById('goalLabel').textContent=c.goal;
+  document.getElementById('goalVal').textContent=c.goalVal;
+  document.getElementById('goalStreak').textContent=c.streak;
+  document.getElementById('goalPercent').textContent=c.percent;
+  document.getElementById('startLabel').textContent=c.start;
+  document.getElementById('homeCoach').textContent=c.coach;
+  document.getElementById('homeSlogan').innerHTML=c.slogan;
+  var pill=document.getElementById('homeLangPill');
+  pill.textContent='🌐 '+(homeLang==='es'?'ES':'EN');
+  pill.setAttribute('aria-label',homeLang==='es'?'Cambiar a inglés':'Switch to Spanish');
+}
+document.getElementById('homeLangPill').addEventListener('click',function(){setAppLanguage(homeLang==='es'?'en':'es');renderHomeLanguage();});
+renderHomeLanguage();
+
+/* ============================================================
+   GEMS
+   ============================================================ */
+/* Reset the existing demo once to the intended new-player balance. */
+var DEMO_SEED_VERSION='login-bonus-v2';
+if(localStorage.getItem('avanza-demo-seed')!==DEMO_SEED_VERSION){
+  localStorage.setItem('avanza-gems','500');
+  localStorage.removeItem('avanza-daily');
+  localStorage.removeItem('avanza-daily-reconciled');
+  localStorage.setItem('avanza-demo-seed',DEMO_SEED_VERSION);
+}
+var hadStoredGems=localStorage.getItem('avanza-gems')!==null;
+var gems = Number(localStorage.getItem('avanza-gems')||500);
+/* When today's reward is still available, this demo always begins at 500. */
+if(localStorage.getItem('avanza-daily')!==new Date().toDateString()){
+  gems=500;
+  localStorage.setItem('avanza-gems','500');
+}
+var xp=Number(localStorage.getItem('avanza-xp')||0);
+var gemStat = document.getElementById('gemStat');
+gemStat.textContent='💎 '+gems;
+var profileSub = document.getElementById('profileSub');
+function animateCount(el, from, to){
+  var dur = 600, t0 = performance.now();
+  (function tick(t){
+    var p = Math.min(1, (t - t0) / dur);
+    var v = Math.round(from + (to - from) * (1 - Math.pow(1 - p, 3))); // ease-out
+    el.textContent = '💎 ' + v;
+    if(p < 1) requestAnimationFrame(tick);
+  })(t0);
+}
+function spawnGemToast(n){
+  var t = document.createElement('div');
+  t.className = 'gem-toast';
+  t.textContent = '+' + n + ' 💎';
+  var phone = document.querySelector('.phone');
+  phone.appendChild(t);
+  setTimeout(function(){ t.remove(); }, 1150);
+}
+function showToast(msg){var t=document.getElementById('demoToast');t.textContent=msg;t.classList.add('show');clearTimeout(t._timer);t._timer=setTimeout(function(){t.classList.remove('show')},2200);}
+function addGems(n,ignorePetBoost){
+  var bonus=!ignorePetBoost&&petState?petStats().gems:0;
+  n=Math.round(n*(1+bonus));
+  var from = gems;
+  gems += n;
+  localStorage.setItem('avanza-gems',gems);
+  if(n > 0) spawnGemToast(n);
+  gemStat.classList.remove('gem-pop'); void gemStat.offsetWidth; gemStat.classList.add('gem-pop');
+  animateCount(gemStat, from, gems);
+  profileSub.textContent = appLang==='es' ? '🔥 racha de 4 días · 💎 '+gems+' gemas' : '🔥 4-day streak · 💎 '+gems+' gems';
+}
+/* Shared bridge for the isolated daily-login controller below. */
+window.__avanzaSetGemBalance=function(nextBalance){
+  var from=gems;
+  gems=Math.max(0,Math.round(Number(nextBalance)||0));
+  localStorage.setItem('avanza-gems',gems);
+  gemStat.textContent='💎 '+gems;
+  profileSub.textContent=appLang==='es'?'🔥 racha de 4 días · 💎 '+gems+' gemas':'🔥 4-day streak · 💎 '+gems+' gems';
+  if(from!==gems){gemStat.classList.remove('gem-pop');void gemStat.offsetWidth;gemStat.classList.add('gem-pop');}
+  return gems;
+};
+/* This direct handler is registered before optional screen renderers, so the
+   login bonus cannot be disabled by a later non-essential UI error. */
+window.claimLoginBonus=function(){
+  var bonus=document.getElementById('loginBonus'),todayKey=new Date().toDateString();
+  if(!bonus||localStorage.getItem('avanza-daily')===todayKey)return;
+  addGems(25,true);
+  localStorage.setItem('avanza-daily',todayKey);
+  bonus.disabled=true;
+  bonus.classList.add('claimed');
+  bonus.textContent=appLang==='es'?'✓ ¡25 gemas añadidas!':'✓ 25 gems added!';
+  showToast(appLang==='es'?'🎁 +25 gemas!':'🎁 +25 gems!');
+  setTimeout(function(){bonus.hidden=true;},1300);
+};
+document.getElementById('loginBonus').onclick=window.claimLoginBonus;
+
+/* ============================================================
+   SVG PET ENGINE (BGS-style, parametric)
+   ============================================================ */
+function shade(hex, p){            // p: -100 darken .. +100 lighten
+  var n = parseInt(hex.slice(1),16), r=(n>>16)&255, g=(n>>8)&255, b=n&255, f=p/100;
+  function a(c){ return Math.max(0,Math.min(255, Math.round(p<0 ? c*(1+f) : c+(255-c)*f))); }
+  return '#'+((1<<24)+(a(r)<<16)+(a(g)<<8)+a(b)).toString(16).slice(1);
+}
+
+var _uid = 0;
+function eye(cx,cy,r,iris){
+  return '<g class="pet-eye">'
+    + '<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="#fff"/>'
+    + '<circle cx="'+cx+'" cy="'+(cy+r*0.12)+'" r="'+(r*0.6)+'" fill="'+iris+'"/>'
+    + '<circle cx="'+cx+'" cy="'+(cy+r*0.18)+'" r="'+(r*0.32)+'" fill="#1c1c1c"/>'
+    + '<circle cx="'+(cx-r*0.28)+'" cy="'+(cy-r*0.3)+'" r="'+(r*0.2)+'" fill="#fff"/>'
+    + '</g>';
+}
+
+function ears(p){
+  var b=p.body, dk=shade(b,-22), inn=p.earInner||shade(b,30);
+  switch(p.ears){
+    case 'fox': return '<polygon points="24,40 16,8 42,34" fill="'+b+'"/><polygon points="76,40 84,8 58,34" fill="'+b+'"/>'
+      + '<polygon points="26,36 21,16 38,33" fill="'+inn+'"/><polygon points="74,36 79,16 62,33" fill="'+inn+'"/>';
+    case 'cat': return '<polygon points="28,38 22,14 44,33" fill="'+b+'"/><polygon points="72,38 78,14 56,33" fill="'+b+'"/>'
+      + '<polygon points="30,35 26,20 41,32" fill="'+(p.earInner||'#F4A0C0')+'"/><polygon points="70,35 74,20 59,32" fill="'+(p.earInner||'#F4A0C0')+'"/>';
+    case 'wolf': return '<polygon points="26,40 18,12 44,34" fill="'+dk+'"/><polygon points="74,40 82,12 56,34" fill="'+dk+'"/>'
+      + '<polygon points="28,37 23,19 40,33" fill="'+inn+'"/><polygon points="72,37 77,19 60,33" fill="'+inn+'"/>';
+    case 'bunny': return '<ellipse cx="38" cy="20" rx="8" ry="22" fill="'+b+'"/><ellipse cx="62" cy="20" rx="8" ry="22" fill="'+b+'"/>'
+      + '<ellipse cx="38" cy="22" rx="4" ry="16" fill="'+(p.earInner||'#FBD4E4')+'"/><ellipse cx="62" cy="22" rx="4" ry="16" fill="'+(p.earInner||'#FBD4E4')+'"/>';
+    case 'round': return '<circle cx="30" cy="34" r="13" fill="'+(p.earColor||dk)+'"/><circle cx="70" cy="34" r="13" fill="'+(p.earColor||dk)+'"/>'
+      + '<circle cx="30" cy="34" r="7" fill="'+(p.earInner||shade(p.earColor||b,28))+'"/><circle cx="70" cy="34" r="7" fill="'+(p.earInner||shade(p.earColor||b,28))+'"/>';
+    case 'koala': return '<circle cx="26" cy="38" r="16" fill="'+b+'"/><circle cx="74" cy="38" r="16" fill="'+b+'"/>'
+      + '<circle cx="26" cy="38" r="9" fill="'+inn+'"/><circle cx="74" cy="38" r="9" fill="'+inn+'"/>';
+    case 'horns': return '<polygon points="34,30 30,10 42,28" fill="'+(p.earColor||'#E8D8B0')+'"/><polygon points="66,30 70,10 58,28" fill="'+(p.earColor||'#E8D8B0')+'"/>';
+    default: return '';
+  }
+}
+
+function tail(p){
+  var b=p.body, dk=shade(b,-18);
+  switch(p.tail){
+    case 'bushy': return '<g class="pet-tail"><ellipse cx="84" cy="64" rx="11" ry="17" transform="rotate(28 84 64)" fill="'+b+'"/>'
+      + '<ellipse cx="90" cy="74" rx="7" ry="9" transform="rotate(28 90 74)" fill="#fff" opacity=".92"/></g>';
+    case 'cotton': return '<g class="pet-tail"><circle cx="80" cy="74" r="9" fill="#fff"/></g>';
+    case 'striped': return '<g class="pet-tail"><ellipse cx="82" cy="60" rx="7" ry="17" transform="rotate(24 82 60)" fill="'+b+'"/>'
+      + '<rect x="78" y="50" width="9" height="4" rx="2" transform="rotate(24 82 60)" fill="'+dk+'"/></g>';
+    case 'flame': return '<g class="pet-tail"><polygon points="80,72 98,66 86,82" fill="#FF8C42"/><polygon points="82,74 92,70 86,80" fill="#FFD400"/></g>';
+    case 'curl': return '<g class="pet-tail"><path d="M80 70 q14 -2 10 -14" stroke="'+dk+'" stroke-width="5" fill="none" stroke-linecap="round"/></g>';
+    default: return '';
+  }
+}
+
+function extras(p){   // drawn behind body
+  var b=p.body;
+  switch(p.extra){
+    case 'mane': return '<circle cx="50" cy="55" r="35" fill="'+(p.maneColor||shade(b,-28))+'"/>';
+    case 'butterfly': return '<ellipse cx="20" cy="52" rx="13" ry="17" fill="'+(p.wingColor||'#F4A0C0')+'" opacity=".9"/>'
+      + '<ellipse cx="80" cy="52" rx="13" ry="17" fill="'+(p.wingColor||'#F4A0C0')+'" opacity=".9"/>';
+    case 'wings_small': return '<polygon points="22,46 4,34 24,62" fill="'+(p.wingColor||shade(b,18))+'"/>'
+      + '<polygon points="78,46 96,34 76,62" fill="'+(p.wingColor||shade(b,18))+'"/>';
+    case 'wings_flame': return '<polygon points="20,44 -2,26 26,64" fill="#FF7A1A"/><polygon points="22,48 6,36 26,60" fill="#FFC107"/>'
+      + '<polygon points="80,44 102,26 74,64" fill="#FF7A1A"/><polygon points="78,48 94,36 74,60" fill="#FFC107"/>';
+    default: return '';
+  }
+}
+
+function accessory(p){
+  switch(p.acc){
+    case 'crown': return '<polygon points="38,16 44,26 50,16 56,26 62,16 62,28 38,28" fill="#F0B429" stroke="#D9962A" stroke-width="1"/>'
+      + '<circle cx="50" cy="14" r="2.4" fill="#FFE08A"/>';
+    case 'star': return '<polygon points="50,4 53,12 61,12 55,17 57,25 50,20 43,25 45,17 39,12 47,12" fill="#FFD400" stroke="#E8B400" stroke-width=".8"/>';
+    case 'halo': return '<ellipse cx="50" cy="14" rx="16" ry="5" fill="none" stroke="#FFE08A" stroke-width="3"/>';
+    default: return '';
+  }
+}
+
+function face(p){
+  var ec = p.eye || '#3a3a3a', s='';
+  if(p.face==='frog'){
+    s += '<circle cx="34" cy="34" r="11" fill="#fff" stroke="'+shade(p.body,-15)+'" stroke-width="1"/>';
+    s += '<circle cx="66" cy="34" r="11" fill="#fff" stroke="'+shade(p.body,-15)+'" stroke-width="1"/>';
+    s += eye(34,35,7,ec).replace('pet-eye','pet-eye');
+    s += eye(66,35,7,ec);
+    s += '<path d="M38 64 q12 10 24 0" stroke="#2c2c2c" stroke-width="2" fill="none" stroke-linecap="round"/>';
+    return s;
+  }
+  if(p.face==='duck'){
+    s += eye(42,48,5.5,ec) + eye(58,48,5.5,ec);
+    s += '<ellipse cx="50" cy="62" rx="13" ry="6.5" fill="#E8761A"/>';
+    s += '<ellipse cx="50" cy="60.5" rx="13" ry="2.5" fill="#C95E10"/>';
+    return s;
+  }
+  if(p.face==='sloth'){
+    s += '<ellipse cx="40" cy="52" rx="9" ry="8" fill="'+shade(p.body,-16)+'" opacity=".5"/>';
+    s += '<ellipse cx="60" cy="52" rx="9" ry="8" fill="'+shade(p.body,-16)+'" opacity=".5"/>';
+    s += '<g class="pet-eye"><ellipse cx="40" cy="54" rx="4" ry="2.4" fill="#2c2c2c"/><ellipse cx="60" cy="54" rx="4" ry="2.4" fill="#2c2c2c"/></g>';
+    s += '<ellipse cx="50" cy="62" rx="3" ry="2.4" fill="#3a3a3a"/>';
+    s += '<path d="M44 68 q6 4 12 0" stroke="#3a3a3a" stroke-width="1.6" fill="none" stroke-linecap="round"/>';
+    return s;
+  }
+  if(p.face==='panda'){
+    s += '<ellipse cx="40" cy="52" rx="9" ry="11" fill="#2c2c2c"/><ellipse cx="60" cy="52" rx="9" ry="11" fill="#2c2c2c"/>';
+    s += eye(40,52,5,ec) + eye(60,52,5,ec);
+    s += '<ellipse cx="50" cy="62" rx="3.4" ry="2.6" fill="#2c2c2c"/>';
+    s += '<path d="M44 68 q6 4 12 0" stroke="#2c2c2c" stroke-width="1.6" fill="none" stroke-linecap="round"/>';
+    return s;
+  }
+  // default
+  var er = p.eyeR || 8;
+  s += eye(40,53,er,ec) + eye(60,53,er,ec);
+  if(p.bigNose){
+    s += '<ellipse cx="50" cy="62" rx="6" ry="7.5" fill="'+(p.noseColor||'#5a5550')+'"/>';
+    s += '<ellipse cx="48" cy="60" rx="1.6" ry="2" fill="#fff" opacity=".5"/>';
+  } else {
+    s += '<ellipse cx="50" cy="62" rx="3.2" ry="2.6" fill="'+(p.noseColor||'#3a3a3a')+'"/>';
+  }
+  s += '<path d="M44 68 q6 5 12 0" stroke="#3a3a3a" stroke-width="1.6" fill="none" stroke-linecap="round"/>';
+  return s;
+}
+
+function petSVG(p){
+  return '<img class="pet-model-img" src="assets/pets/'+(p.asset||p.id)+'.png" alt="'+p.name+'">';
+  _uid++; var g='bg'+_uid;
+  var lite=shade(p.body,30), dark=shade(p.body,-28), mid=shade(p.body,8);
+  var s='<svg class="pet-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">';
+  s+='<defs><radialGradient id="'+g+'" cx="40%" cy="30%" r="78%">'
+    +'<stop offset="0%" stop-color="'+lite+'"/><stop offset="100%" stop-color="'+dark+'"/></radialGradient></defs>';
+  s+='<g class="pet-model">';
+  s+= extras(p);
+  s+= tail(p);
+  s+= ears(p);
+  s+='<ellipse class="pet-feet" cx="37" cy="80" rx="13" ry="9" fill="'+dark+'"/><ellipse class="pet-feet" cx="63" cy="80" rx="13" ry="9" fill="'+dark+'"/>';
+  s+='<ellipse class="pet-body" cx="50" cy="57" rx="33" ry="31" fill="url(#'+g+')"/>';
+  /* chunky faceted patches make the body feel like a collectible toy, not a flat emoji */
+  s+='<path class="pet-facet" d="M24 48 Q36 35 45 32 L40 57 Q30 64 21 60Z" fill="'+lite+'" opacity=".34"/>';
+  s+='<path class="pet-facet" d="M76 48 Q65 39 58 37 L63 61 Q73 67 80 59Z" fill="'+dark+'" opacity=".32"/>';
+  if(p.belly) s+='<ellipse cx="50" cy="68" rx="18" ry="16" fill="'+p.belly+'" opacity="'+(p.bellyOp||0.95)+'"/>';
+  if(p.chestStar) s+='<polygon points="50,52 53,60 61,60 55,65 57,73 50,68 43,73 45,65 39,60 47,60" fill="#FFD400" opacity=".9"/>';
+  s+='<ellipse class="pet-shine" cx="36" cy="42" rx="12" ry="9" fill="#fff" opacity="0.34"/>';
+  s+='<ellipse class="pet-cheek" cx="31" cy="65" rx="6" ry="3" fill="#FF8C8C"/><ellipse class="pet-cheek" cx="69" cy="65" rx="6" ry="3" fill="#FF8C8C"/>';
+  s+= face(p);
+  s+= accessory(p);
+  s+='</g></svg>';
+  return s;
+}
+
+/* ============================================================
+   PET ROSTER
+   ============================================================ */
+var PETS = [
+  // ---- Common (Lesson Chest, cream egg) ----
+  {id:'foxy',  name:'Foxy',  rarity:'common', body:'#E8621A', belly:'#fff', ears:'fox',  tail:'bushy',  eye:'#3DA06B'},
+  {id:'bunny', name:'Bunny', rarity:'common', body:'#F4A0C0', ears:'bunny', tail:'cotton', eye:'#5B8DEF', earInner:'#FBD4E4'},
+  {id:'bruno', name:'Bruno', rarity:'common', body:'#8B5E3C', belly:'#E8D3B0', ears:'round', tail:'curl', eye:'#5a3a1f', earColor:'#7A4F30'},
+  {id:'mochi', name:'Mochi', rarity:'common', body:'#F5F5F5', ears:'round', earColor:'#2c2c2c', earInner:'#444', face:'panda', eye:'#2c2c2c'},
+  {id:'rana',  name:'Rana',  rarity:'common', body:'#3DA06B', belly:'#F0B429', face:'frog', eye:'#F0B429'},
+  {id:'pato',  name:'Pato',  rarity:'common', body:'#F0B429', face:'duck', eye:'#2c2c2c'},
+  {id:'coco',  name:'Coco',  rarity:'common', body:'#E8A85C', belly:'#F5E2C0', ears:'round', earColor:'#D9954A', eye:'#2c2c2c'},
+  {id:'luna',  name:'Luna',  rarity:'common', body:'#B9A9D4', ears:'cat', tail:'striped', eye:'#2BB3A3', earInner:'#F4A0C0'},
+  // ---- Rare (Streak Chest, blue egg) ----
+  {id:'koa',      name:'Koa',      rarity:'rare', body:'#B8BEC4', ears:'koala', bigNose:true, noseColor:'#4a4a4a', eye:'#3DA06B'},
+  {id:'mariposa', name:'Mariposa', rarity:'rare', body:'#B36BD4', extra:'butterfly', wingColor:'#F4A0C0', eye:'#F4A0C0'},
+  {id:'rico',     name:'Rico',     rarity:'rare', body:'#00B4D8', extra:'wings_small', wingColor:'#F0B429', eye:'#FF8C42', noseColor:'#E03B3B'},
+  {id:'pepe',     name:'Pepe',     rarity:'rare', body:'#8FA98C', face:'sloth', eye:'#2c2c2c'},
+  {id:'lobo',     name:'Lobo',     rarity:'rare', body:'#6B7280', belly:'#AEB4BC', ears:'wolf', tail:'bushy', eye:'#F0B429'},
+  // ---- Epic (Gem Chest, purple egg) ----
+  {id:'rey',      name:'Rey',      rarity:'epic', body:'#D4940A', extra:'mane', maneColor:'#A8740A', acc:'crown', eye:'#7a4a00'},
+  {id:'draco',    name:'Draco',    rarity:'epic', body:'#5A4A6A', extra:'wings_small', wingColor:'#7A6A9A', ears:'horns', earColor:'#3DA06B', eye:'#FF3B3B'},
+  {id:'estrella', name:'Estrella', rarity:'epic', body:'#FFFFFF', chestStar:true, acc:'star', eye:'#F4A0C0'},
+  // ---- Legendary (Mystery Chest, gold egg) ----
+  {id:'aguila',   name:'Aguila',   rarity:'legendary', body:'#1E3A5F', belly:'#F2F2F2', acc:'crown', eye:'#FFD400', noseColor:'#E8B400'},
+  {id:'fuego',    name:'Fuego',    rarity:'legendary', body:'#CC2200', extra:'wings_flame', tail:'flame', ears:'horns', earColor:'#FF8C42', eye:'#FFFFFF'}
+  ,{id:'sprout',name:'Sprout',rarity:'common',body:'#71B85A',eye:'#2C6B35'},{id:'nube',name:'Nube',rarity:'common',body:'#BFD9F5',eye:'#5B8DEF'},{id:'toby',name:'Toby',rarity:'common',body:'#C9895B',eye:'#5A351F'}
+  ,{id:'onyx',name:'Onyx',rarity:'rare',body:'#4C5060',eye:'#F0B429'},{id:'sola',name:'Sola',rarity:'rare',body:'#F4BE4A',eye:'#8C5D05'},{id:'mist',name:'Mist',rarity:'rare',body:'#9BB9C8',eye:'#496A7B'}
+  ,{id:'nova',name:'Nova',rarity:'epic',body:'#8E76C5',eye:'#F6D365'},{id:'titan',name:'Titan',rarity:'epic',body:'#5F7D98',eye:'#EAF3F8'}
+  ,{id:'aurora',name:'Aurora',rarity:'legendary',body:'#D98DB7',eye:'#FFF1A6'},{id:'coloso',name:'Coloso',rarity:'secret',body:'#6A5E8A',eye:'#F0B429'}
+];
+var PET_BY_ID = {}; PETS.forEach(function(p){ PET_BY_ID[p.id]=p; });
+
+var RARITY_LABEL = {common:'Common', rare:'Rare', epic:'Epic', legendary:'Legendary',secret:'Secret'};
+/* Per-level gem bonus. Three equipped pets are capped below to keep progression fair. */
+var RARITY_BONUS = {common:.01, rare:.018, epic:.03, legendary:.045, secret:.07};
+var PET_ROLES={foxy:'Gem boost',bunny:'XP boost',bruno:'Streak guard',mochi:'Chest luck',rana:'Gem boost',pato:'XP boost',coco:'Streak guard',luna:'Chest luck',koa:'Gem boost',mariposa:'Chest luck',rico:'XP boost',pepe:'Streak guard',lobo:'Gem boost',rey:'XP boost',draco:'Chest luck',estrella:'Streak guard',aguila:'Gem boost',fuego:'Chest luck',sprout:'Gem boost',nube:'XP boost',toby:'Streak guard',onyx:'Chest luck',sola:'XP boost',mist:'Gem boost',nova:'XP boost',titan:'Chest luck',aurora:'Gem boost',coloso:'Streak guard'};
+var GEMS_BY_RARITY = {common:20, rare:50, epic:100, legendary:200};
+var EGG = {
+  common:    {base:'#EFE6CE', light:'#FBF6E8', speck:'#D2BE8C'},
+  rare:      {base:'#C2D6F0', light:'#E3EEFB', speck:'#7FA8D8'},
+  epic:      {base:'#DCC4EE', light:'#F1E5FA', speck:'#B98FD6'},
+  legendary: {base:'#F2D98A', light:'#FCF1C8', speck:'#D9A92E'}
+};
+var CHEST_TIER = ['common','rare','epic','legendary'];
+
+/* unlocked state (existing collection starts with Foxy, Bunny, Koa) */
+var unlocked = {foxy:true, bunny:true, koa:true};
+var petState;try{petState=JSON.parse(localStorage.getItem('avanza-pets')||'{"equipped":[],"levels":{}}');}catch(error){petState={equipped:[],levels:{}};}if(!petState||!Array.isArray(petState.equipped))petState={equipped:[],levels:{}};if(!petState.levels||typeof petState.levels!=='object')petState.levels={};
+function savePetState(){localStorage.setItem('avanza-pets',JSON.stringify(petState));}
+function petStats(){var out={gems:0,xp:0,luck:0,shield:false};petState.equipped.forEach(function(id){var p=PET_BY_ID[id],level=petState.levels[id]||1,base=p?RARITY_BONUS[p.rarity]:0,role=PET_ROLES[id];if(role==='Gem boost')out.gems+=base*level;if(role==='XP boost')out.xp+=base*level;if(role==='Chest luck')out.luck+=base*level;if(role==='Streak guard')out.shield=true});out.gems=Math.min(.30,out.gems);out.xp=Math.min(.25,out.xp);out.luck=Math.min(.20,out.luck);return out;}
+function renderActivePets(){var el=document.getElementById('activePets');if(!el)return;petState.equipped=petState.equipped.filter(function(id){return unlocked[id]&&PET_BY_ID[id]});savePetState();el.innerHTML=petState.equipped.map(function(id){var p=PET_BY_ID[id];return '<span class="mini" title="'+p.name+' · '+PET_ROLES[id]+'"><img src="assets/pets/'+(p.asset||p.id)+'.png" alt="'+p.name+'"></span>'}).join('')||'<small>Equip pets in Collection</small>';}
+
+/* ---------- render collection grid ---------- */
+function legSparks(){
+  var s='';
+  for(var i=0;i<6;i++){
+    s+='<span class="leg-spark" style="transform:rotate('+(i*60)+'deg) translateY(-46px);animation-delay:'+(i*0.22)+'s"></span>';
+  }
+  return s;
+}
+function petWrapHTML(p, idx){
+  var isLeg = p.rarity==='legendary';
+  var aura = p.rarity==='common' ? '' : ' aura-'+p.rarity;
+  var extra = isLeg ? '<div class="leg-ring"></div>'+legSparks() : '';
+  var delay = ((idx||0)%6)*0.3;
+  return '<div class="pet-wrap'+aura+'">'+extra+
+    '<div class="pet-float" style="animation-delay:'+delay+'s">'+petSVG(p)+'</div></div>';
+}
+var plushieGrid = document.getElementById('plushieGrid');
+function renderCollection(){
+  var html='';
+  ['common','rare','epic','legendary','secret'].forEach(function(tier){
+    var tierPets=PETS.filter(function(p){return p.rarity===tier;});if(!tierPets.length)return;
+    html+='<div class="collection-title rarity-heading '+tier+'">'+RARITY_LABEL[tier]+'</div><div class="plushie-grid">';
+    tierPets.forEach(function(p, i){
+    var lk = !unlocked[p.id];
+    var eq=petState.equipped.indexOf(p.id)>-1;
+    html += '<div class="plushie '+p.rarity+(lk?' locked':'')+(eq?' equipped':'')+'" data-pet="'+p.id+'">'
+      + petWrapHTML(p, i)
+      + '<div class="name">'+(lk?'???':p.name)+'</div>'
+      + '<span class="rarity '+p.rarity+'">'+RARITY_LABEL[p.rarity]+'</span>'
+      + (lk?'<div class="lock-ov">🔒</div>':'<div class="name">Lv. '+(petState.levels[p.id]||1)+'</div><div class="pet-role">'+PET_ROLES[p.id]+'</div><button class="equip-btn" data-equip="'+p.id+'">'+(eq?'Unequip':'Equip')+'</button>')
+      + '</div>';
+  });
+    html+='</div>';
+  });
+  plushieGrid.innerHTML = html;
+  renderActivePets();
+  startBlink();
+}
+plushieGrid.addEventListener('click',function(e){var b=e.target.closest('[data-equip]');if(!b)return;var id=b.dataset.equip,i=petState.equipped.indexOf(id);if(i>-1)petState.equipped.splice(i,1);else if(petState.equipped.length<3)petState.equipped.push(id);else return alert('Equip up to 3 pets.');savePetState();renderCollection();});
+
+/* ---------- eye blink (randomized per pet) ---------- */
+function startBlink(){
+  document.querySelectorAll('.pet-svg').forEach(function(svg){
+    if(svg.dataset.blink) return;
+    svg.dataset.blink='1';
+    (function loop(){
+      var wait = 3500 + Math.random()*3000;
+      setTimeout(function(){
+        if(!document.body.contains(svg)) return;
+        var eyes = svg.querySelectorAll('.pet-eye');
+        eyes.forEach(function(e){ e.classList.add('blink'); });
+        setTimeout(function(){ eyes.forEach(function(e){ e.classList.remove('blink'); }); }, 180);
+        loop();
+      }, wait);
+    })();
+  });
+}
+
+/* ============================================================
+   EGG HATCH SEQUENCE
+   ============================================================ */
+var eggOverlay = document.getElementById('eggOverlay');
+var eggStage   = document.getElementById('eggStage');
+var eggShell   = document.getElementById('eggShell');
+var petReveal  = document.getElementById('petReveal');
+var revealInfo = document.getElementById('revealInfo');
+var eggName    = document.getElementById('eggName');
+var eggRarity  = document.getElementById('eggRarity');
+var eggGems    = document.getElementById('eggGems');
+var eggNice    = document.getElementById('eggNice');
+var pendingPet = null, pendingTier = null;
+var hatchTimers = [];
+
+function eggSVG(tier){
+  var c = EGG[tier];
+  var s='<svg class="egg-svg" viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">';
+  s+='<defs><radialGradient id="eggrad" cx="40%" cy="28%" r="80%">'
+    +'<stop offset="0%" stop-color="'+c.light+'"/><stop offset="100%" stop-color="'+c.base+'"/></radialGradient></defs>';
+  s+='<ellipse cx="50" cy="108" rx="31" ry="5" fill="#2C2C2C" opacity=".18" stroke="none"/>';
+  s+='<ellipse cx="50" cy="64" rx="36" ry="46" fill="url(#eggrad)" stroke="#2C2C2C" stroke-width="3.4"/>';
+  s+='<path d="M22 50 Q38 31 50 25 L44 64 Q31 75 18 67Z" fill="'+c.light+'" opacity=".35" stroke="none"/>';
+  s+='<path d="M78 51 Q65 37 57 35 L62 78 Q75 82 83 66Z" fill="'+c.base+'" opacity=".34" stroke="none"/>';
+  var sp=[[40,40],[60,46],[34,64],[66,70],[50,86],[44,56],[58,30],[30,50],[70,58],[52,102]];
+  sp.forEach(function(d){ s+='<circle cx="'+d[0]+'" cy="'+d[1]+'" r="'+(2+Math.random()*1.6).toFixed(1)+'" fill="'+c.speck+'" opacity=".8" stroke="#2C2C2C" stroke-width=".7"/>'; });
+  s+='<ellipse cx="38" cy="42" rx="9" ry="13" fill="#fff" opacity="0.32"/>';
+  if(tier==='legendary') s+='<ellipse cx="50" cy="64" rx="36" ry="46" fill="#fff" opacity="0.12"/>';
+  // crack lines (animated later)
+  var cs='#5a4a2a';
+  s+='<path class="crack" style="stroke:'+cs+'" d="M30 44 L42 58 L34 70 L46 84"/>';
+  s+='<path class="crack" style="stroke:'+cs+'" d="M72 48 L60 62 L70 72 L58 88"/>';
+  s+='<path class="crack" style="stroke:'+cs+'" d="M50 30 L50 56"/>';
+  s+='</svg>';
+  return s;
+}
+function clearTimers(){ hatchTimers.forEach(clearTimeout); hatchTimers=[]; }
+function spawnFragments(tier){
+  var c=EGG[tier];
+  for(var i=0;i<11;i++){
+    var f=document.createElement('div'); f.className='frag';
+    var ang=Math.random()*Math.PI*2, dist=70+Math.random()*60;
+    f.style.background=c.base;
+    f.style.setProperty('--fx',(Math.cos(ang)*dist)+'px');
+    f.style.setProperty('--fy',(Math.sin(ang)*dist)+'px');
+    f.style.setProperty('--fr',(Math.random()*360)+'deg');
+    eggStage.appendChild(f);
+    (function(el){ setTimeout(function(){ el.remove(); }, 680); })(f);
+  }
+}
+function burst(container, tier){
+  var n = tier==='legendary'?30:22;
+  var cols = tier==='legendary'
+    ? ['#F0B429','#FFE08A','#FFFFFF','#FF8C42']
+    : ['#C77DFF','#E9B8FF','#FFFFFF','#9CAF88'];
+  for(var i=0;i<n;i++){
+    var d=document.createElement('div'); d.className='particle';
+    var ang=Math.random()*Math.PI*2, dist=55+Math.random()*75;
+    d.style.background=cols[i%cols.length];
+    d.style.setProperty('--tx',(Math.cos(ang)*dist)+'px');
+    d.style.setProperty('--ty',(Math.sin(ang)*dist)+'px');
+    container.appendChild(d);
+    (function(el){ setTimeout(function(){ el.remove(); }, 900); })(d);
+  }
+}
+function hatch(pet, tier){
+  pendingPet = pet; pendingTier = tier;
+  clearTimers();
+  // Phase 1 — egg appears + gentle rock
+  eggShell.innerHTML = eggSVG(tier);
+  eggShell.style.display='block';
+  eggShell.className='egg-shell egg-rock';
+  petReveal.innerHTML=''; petReveal.className='pet-reveal';
+  revealInfo.className='reveal-info'; revealInfo.style.display='none';
+  eggOverlay.classList.add('show');
+  // Phase 2 — cracks + screen shake (1.0s)
+  hatchTimers.push(setTimeout(function(){
+    eggShell.className='egg-shell egg-shake';
+    eggShell.querySelectorAll('.crack').forEach(function(c){ c.classList.add('go'); });
+  }, 1000));
+  // Phase 3 — egg bursts + shell fragments (2.5s)
+  hatchTimers.push(setTimeout(function(){
+    eggShell.classList.remove('egg-shake');
+    eggShell.classList.add('egg-pop');
+    spawnFragments(tier);
+  }, 2500));
+  // Phase 4 — pet spring bounce-in (3.0s)
+  hatchTimers.push(setTimeout(function(){
+    eggShell.style.display='none';
+    petReveal.innerHTML = petWrapHTML(pet, 0);
+    petReveal.classList.add('in');
+    startBlink();
+    if(tier==='epic' || tier==='legendary') burst(petReveal, tier);
+  }, 3000));
+  // Phase 5 — staggered info reveal (3.7s)
+  hatchTimers.push(setTimeout(function(){
+    eggName.textContent = 'You got ' + pet.name + '!';
+    eggRarity.innerHTML = '<span class="rarity '+tier+'">'+RARITY_LABEL[tier]+'</span>';
+    eggGems.textContent = '+' + GEMS_BY_RARITY[tier] + ' 💎';
+    revealInfo.style.display='block';
+    revealInfo.classList.add('in');
+  }, 3700));
+}
+eggNice.addEventListener('click', function(){
+  eggOverlay.classList.remove('show');
+  if(pendingPet){
+    if(!unlocked[pendingPet.id]){ unlocked[pendingPet.id]=true; }
+    addGems(GEMS_BY_RARITY[pendingTier]);
+    renderCollection();
+  }
+  pendingPet=null; pendingTier=null;
+});
+
+/* ============================================================
+   CHEST OPENING -> hatch
+   ============================================================ */
+function pickPet(tier){
+  var pool = PETS.filter(function(p){ return p.rarity===tier && !unlocked[p.id]; });
+  if(!pool.length) pool = PETS.filter(function(p){ return p.rarity===tier; });
+  return pool[Math.floor(Math.random()*pool.length)];
+}
+document.querySelectorAll('.chest-card[data-chest]').forEach(function(card){
+  card.addEventListener('click', function(){
+    if(card.dataset.busy) return;
+    card.dataset.busy='1';
+    card.classList.add('shake');
+    setTimeout(function(){
+      card.classList.remove('shake');
+      delete card.dataset.busy;
+      var tier = CHEST_TIER[parseInt(card.getAttribute('data-chest'),10)] || 'common';
+      hatch(pickPet(tier), tier);
+    }, 500);
+  });
+});
+// legacy modal close still wired (kept for safety)
+var rewardClose=document.getElementById('rewardClose');
+if(rewardClose) rewardClose.addEventListener('click', function(){ document.getElementById('rewardModal').classList.remove('show'); });
+
+/* ============================================================
+   LESSON FLOW + ES/EN TOGGLE
+   ============================================================ */
+var LESSON = {
+  es:{
+    kicker:'Unidad 1 · Lo Básico del Crédito',
+    mTime:'6 min', mXp:'+90 XP', mDiff:'🟢 Principiante',
+    cont:'Continuar', next:'Siguiente', quizKick:'Pon a prueba lo que sabes',
+    doneTitle:'¡Lección Completada!', doneSub:'Ganaste',
+    contLearn:'Seguir Aprendiendo', replay:'Repetir',
+    steps:[
+      {type:'teach', pet:'foxy', title:'¿Qué es un puntaje de crédito?',
+        lines:['¡Hola! Soy <b>Foxy</b> 🦊 y te acompaño hoy.',
+               'Tu puntaje de crédito es un número entre <b>300 y 850</b>.',
+               'Les dice a los bancos qué tan confiable eres para pagar dinero prestado.'],
+        callout:'Muchas familias latinas empiezan desde cero — <b>eso es normal</b>. Solo el <b>39% de los hispanos</b> tiene educación financiera. ¡Avanza lo cambia!'},
+      {type:'teach', pet:'bunny', title:'Los 5 Factores',
+        lines:['🐰 Tu puntaje se arma con <b>5 ingredientes</b>.','¡El más importante es pagar a tiempo!'],
+        factors:[
+          ['35%','Historial de Pagos','Pagar a tiempo es lo más importante.'],
+          ['30%','Uso del Crédito','Cuánto de tu límite usas.'],
+          ['15%','Antigüedad','Hace cuánto tienes crédito.'],
+          ['10%','Tipos de Crédito','La variedad de cuentas que manejas.'],
+          ['10%','Crédito Nuevo','Cuentas abiertas recientemente.']
+        ]},
+      {type:'quiz', pet:'koa',
+        q:'María paga a tiempo pero usa $800 de un límite de $1,000. ¿Cuál es su mayor problema?',
+        opts:[{t:'Paga a tiempo'},{t:'Uso del crédito muy alto: 80%',correct:true},{t:'Tiene demasiadas tarjetas'},{t:'Su puntaje está bien'}],
+        good:'¡Exacto! 🐨 Usar el 80% es demasiado. Mantén tu uso <b>por debajo del 30%</b>.',
+        bad:'¡Casi! 🐨 El problema es el uso del crédito: 80% es muy alto. Apunta a <b>menos del 30%</b>.'},
+      {type:'teach', pet:'rana', title:'Tip rápido',
+        lines:['🐸 Dato curioso: pagar a tiempo es el <b>35%</b> de tu puntaje.','Activa <b>pagos automáticos</b> para no olvidar nunca un pago.']},
+      {type:'quiz', pet:'foxy',
+        q:'¿Cuál factor pesa MÁS en tu puntaje de crédito?',
+        opts:[{t:'Historial de pagos (35%)',correct:true},{t:'Crédito nuevo (10%)'},{t:'Tipos de crédito (10%)'},{t:'Antigüedad (15%)'}],
+        good:'¡Correcto! 🦊 El historial de pagos es el rey 👑 con un 35%.',
+        bad:'¡Uy! 🦊 El que más pesa es el <b>historial de pagos</b> (35%). ¡Paga siempre a tiempo!'},
+      {type:'quiz', pet:'bunny',
+        q:'¿Cuánto de tu límite de crédito deberías usar como máximo?',
+        opts:[{t:'80%'},{t:'50%'},{t:'30% o menos',correct:true},{t:'100%'}],
+        good:'¡Sí! 🐰 Usar <b>30% o menos</b> mantiene tu puntaje saludable. 🟢',
+        bad:'¡Casi! 🐰 Lo ideal es usar <b>30% o menos</b> de tu límite.'},
+      {type:'teach', pet:'rey', title:'¡Lo lograste!',
+        lines:['🦁 ¡Trabajo increíble!','Ya entiendes lo básico del crédito.','Sigue tu racha y construye un futuro sólido. 💪']}
+    ]
+  },
+  en:{
+    kicker:'Unit 1 · Credit Basics',
+    mTime:'6 min', mXp:'+90 XP', mDiff:'🟢 Beginner',
+    cont:'Continue', next:'Next', quizKick:'Test what you know',
+    doneTitle:'Lesson Complete!', doneSub:'You earned',
+    contLearn:'Continue Learning', replay:'Replay',
+    steps:[
+      {type:'teach', pet:'foxy', title:'What is a credit score?',
+        lines:['Hi! I am <b>Foxy</b> 🦊 and I will guide you today.',
+               'Your credit score is a number between <b>300 and 850</b>.',
+               'It tells banks how reliably you repay money you borrow.'],
+        callout:'Many Latino families start from zero — <b>that is normal</b>. Only <b>39% of Hispanic Americans</b> are financially literate. Avanza changes that!'},
+      {type:'teach', pet:'bunny', title:'The 5 Factors',
+        lines:['🐰 Your score is built from <b>5 ingredients</b>.','The most important one is paying on time!'],
+        factors:[
+          ['35%','Payment History','Paying on time matters most.'],
+          ['30%','Credit Utilization','How much of your limit you use.'],
+          ['15%','Length of History','How long you have had credit.'],
+          ['10%','Credit Mix','The variety of accounts you manage.'],
+          ['10%','New Credit','Recently opened accounts.']
+        ]},
+      {type:'quiz', pet:'koa',
+        q:'Maria pays on time but uses $800 of a $1,000 limit. What is her biggest problem?',
+        opts:[{t:'She pays on time'},{t:'Credit utilization too high at 80%',correct:true},{t:'She has too many cards'},{t:'Her score is fine'}],
+        good:'Exactly! 🐨 Using 80% is too much. Keep your utilization <b>under 30%</b>.',
+        bad:'So close! 🐨 The issue is utilization: 80% is too high. Aim for <b>under 30%</b>.'},
+      {type:'teach', pet:'rana', title:'Quick tip',
+        lines:['🐸 Fun fact: paying on time is <b>35%</b> of your score.','Turn on <b>autopay</b> so you never miss a payment.']},
+      {type:'quiz', pet:'foxy',
+        q:'Which factor weighs the MOST in your credit score?',
+        opts:[{t:'Payment history (35%)',correct:true},{t:'New credit (10%)'},{t:'Credit mix (10%)'},{t:'Length of history (15%)'}],
+        good:'Correct! 🦊 Payment history is king 👑 at 35%.',
+        bad:'Oops! 🦊 The heaviest factor is <b>payment history</b> (35%). Always pay on time!'},
+      {type:'quiz', pet:'bunny',
+        q:'How much of your credit limit should you use at most?',
+        opts:[{t:'80%'},{t:'50%'},{t:'30% or less',correct:true},{t:'100%'}],
+        good:'Yes! 🐰 Using <b>30% or less</b> keeps your score healthy. 🟢',
+        bad:'Close! 🐰 The sweet spot is using <b>30% or less</b> of your limit.'},
+      {type:'teach', pet:'rey', title:'You did it!',
+        lines:['🦁 Amazing work!','You now understand the basics of credit.','Keep your streak going and build a strong future. 💪']}
+    ]
+  }
+};
+var FACTOR_COLORS = ['var(--orange)','var(--sage)','#F0B429','#5B6CE0','#E07AB0'];
+
+/* A reusable micro-course format. It deliberately alternates explanation and
+   doing, so the lesson earns its 2–4 minute promise instead of becoming a
+   longer slideshow. */
+var COURSE = {
+  es:{kicker:'Unidad 1 · Crédito básico',mTime:'3 min',mXp:'+180 XP',mDiff:'🟢 Principiante',cont:'Continuar',next:'Siguiente',quizKick:'Comprueba tu idea',doneTitle:'¡Curso completado!',doneSub:'Ganaste',contLearn:'Seguir aprendiendo',replay:'Repetir',steps:[
+    {type:'reveal',pet:'foxy',title:'Tu crédito abre puertas',prompt:'Toca para descubrir por qué importa antes de pedir dinero.',reveal:'Un buen puntaje puede ayudarte a pagar menos por un auto, un apartamento o una tarjeta.',reward:true},
+    {type:'decision',pet:'bunny',title:'Una decisión real',q:'Sofía quiere comprar una laptop de $900. ¿Qué la ayuda más?',opts:[{t:'Revisar su límite y plan de pago',correct:true},{t:'Usar toda su tarjeta sin mirar el saldo'},{t:'Abrir tres tarjetas hoy'}],good:'¡Exacto! Un plan protege tu dinero y tu puntaje.',bad:'Primero revisa el límite y cómo pagarás. Ese es el hábito ganador.',reward:true},
+    {type:'teach',pet:'koa',title:'El número detrás de la confianza',lines:['Tu puntaje va de <b>300 a 850</b>.','No es una nota sobre ti: es una señal de cómo manejas crédito.','Los prestamistas lo usan para decidir condiciones.'],callout:'Empezar desde cero es normal. Los hábitos pequeños construyen historial.'},
+    {type:'teach',pet:'rana',title:'Los cinco ingredientes',lines:['Tu puntaje se prepara con <b>5 factores</b>.','Hoy dominarás los dos que más pesan.'],factors:[['35%','Historial de pagos','Paga cada cuenta a tiempo.'],['30%','Uso del crédito','No ocupes todo tu límite.'],['15%','Antigüedad','Las cuentas viejas ayudan.'],['10%','Mezcla','Distintos tipos de crédito.'],['10%','Crédito nuevo','Abrir mucho de golpe puede bajar el puntaje.']]},
+    {type:'slider',pet:'foxy',title:'Prueba el uso de crédito',q:'Una tarjeta con límite de $1,000 tiene este saldo:',min:0,max:1000,value:800,target:300,tip:'Intenta bajar el saldo a $300 o menos: es 30% del límite.',reward:true},
+    {type:'match',pet:'luna',title:'Empareja el hábito',left:['Pagar puntual','Usar poco límite','Abrir cuentas'],right:['Protege pagos','Mejora utilización','Hazlo con calma'],pairs:[0,1,2],reward:true},
+    {type:'calc',pet:'bruno',title:'Mini calculadora',q:'Tu límite es $2,000 y debes $500. ¿Cuál es tu uso?',opts:[{t:'25%',correct:true},{t:'50%'},{t:'75%'},{t:'100%'}],good:'¡Sí! $500 ÷ $2,000 = 25%. Está debajo de 30%.',bad:'Divide saldo entre límite: 500 ÷ 2,000 = 25%.',reward:true},
+    {type:'quiz',pet:'mariposa',q:'¿Qué pesa más en un puntaje de crédito?',opts:[{t:'Historial de pagos (35%)',correct:true},{t:'Crédito nuevo (10%)'},{t:'Mezcla de crédito (10%)'},{t:'Antigüedad (15%)'}],good:'¡Correcto! Pagar puntual es el factor más grande.',bad:'El historial de pagos pesa 35%.',reward:true},
+    {type:'quiz',pet:'rey',q:'Si no puedes pagar todo este mes, ¿qué opción es mejor?',opts:[{t:'Ignorar el pago'},{t:'Pagar al menos el mínimo a tiempo',correct:true},{t:'Cerrar la cuenta de inmediato'},{t:'Usar otra tarjeta sin plan'}],good:'¡Bien pensado! Pagar a tiempo evita daño al historial.',bad:'Pagar al menos el mínimo a tiempo es mejor que faltar.',reward:true},
+    {type:'summary',pet:'foxy',title:'Tu plan para esta semana',items:['Paga cada cuenta antes de la fecha límite.','Mantén el uso de cada tarjeta en 30% o menos.','Revisa saldo y límite antes de comprar.'],reward:true},
+    {type:'quiz',pet:'estrella',q:'Último reto: límite $600, saldo $120. ¿Tu uso está saludable?',opts:[{t:'Sí, es 20%',correct:true},{t:'No, es 80%'},{t:'No se puede saber'},{t:'Sí, es 60%'}],good:'¡Lo lograste! 120 ÷ 600 = 20%, excelente uso.',bad:'120 ÷ 600 = 20%, que está debajo de 30%.',reward:true}
+  ]},
+  en:{kicker:'Unit 1 · Credit basics',mTime:'3 min',mXp:'+180 XP',mDiff:'🟢 Beginner',cont:'Continue',next:'Next',quizKick:'Check your thinking',doneTitle:'Course complete!',doneSub:'You earned',contLearn:'Keep learning',replay:'Replay',steps:[
+    {type:'reveal',pet:'foxy',title:'Credit opens doors',prompt:'Tap to see why this matters before you borrow money.',reveal:'A strong score can help you pay less for a car, apartment, or card.',reward:true},
+    {type:'decision',pet:'bunny',title:'A real decision',q:'Sofia wants a $900 laptop. What helps her most?',opts:[{t:'Check her limit and payment plan',correct:true},{t:'Use her whole card without checking'},{t:'Open three cards today'}],good:'Exactly! A plan protects your money and your score.',bad:'First check the limit and how you will pay it back.',reward:true},
+    {type:'teach',pet:'koa',title:'The number behind trust',lines:['Your score ranges from <b>300 to 850</b>.','It is not a grade on you—it is a signal of how you handle credit.','Lenders use it to set terms.'],callout:'Starting from zero is normal. Small habits build history.'},
+    {type:'teach',pet:'rana',title:'The five ingredients',lines:['Your score is built from <b>5 factors</b>.','Today you will master the two that matter most.'],factors:[['35%','Payment history','Pay every bill on time.'],['30%','Credit utilization','Do not use all of your limit.'],['15%','Length','Older accounts can help.'],['10%','Mix','Different kinds of credit.'],['10%','New credit','Opening lots at once can hurt.']]},
+    {type:'slider',pet:'foxy',title:'Try credit utilization',q:'A card with a $1,000 limit has this balance:',min:0,max:1000,value:800,target:300,tip:'Lower the balance to $300 or less: that is 30% of the limit.',reward:true},
+    {type:'match',pet:'luna',title:'Match the habit',left:['Pay on time','Use less limit','Open accounts'],right:['Protect payments','Improve utilization','Do it slowly'],pairs:[0,1,2],reward:true},
+    {type:'calc',pet:'bruno',title:'Mini calculator',q:'Your limit is $2,000 and you owe $500. What is your utilization?',opts:[{t:'25%',correct:true},{t:'50%'},{t:'75%'},{t:'100%'}],good:'Yes! $500 ÷ $2,000 = 25%. That is under 30%.',bad:'Divide balance by limit: 500 ÷ 2,000 = 25%.',reward:true},
+    {type:'quiz',pet:'mariposa',q:'Which factor weighs the most in a credit score?',opts:[{t:'Payment history (35%)',correct:true},{t:'New credit (10%)'},{t:'Credit mix (10%)'},{t:'Length (15%)'}],good:'Correct! Paying on time is the biggest factor.',bad:'Payment history weighs 35%.',reward:true},
+    {type:'quiz',pet:'rey',q:'If you cannot pay everything this month, which is best?',opts:[{t:'Ignore the payment'},{t:'Pay at least the minimum on time',correct:true},{t:'Close the account immediately'},{t:'Use another card without a plan'}],good:'Good call! Paying on time protects your history.',bad:'Paying at least the minimum on time is better than missing it.',reward:true},
+    {type:'summary',pet:'foxy',title:'Your plan for this week',items:['Pay every bill before its due date.','Keep each card at 30% of its limit or less.','Check your balance and limit before buying.'],reward:true},
+    {type:'quiz',pet:'estrella',q:'Final challenge: $600 limit, $120 balance. Is that healthy utilization?',opts:[{t:'Yes, it is 20%',correct:true},{t:'No, it is 80%'},{t:'You cannot tell'},{t:'Yes, it is 60%'}],good:'You got it! 120 ÷ 600 = 20%, excellent utilization.',bad:'120 ÷ 600 = 20%, which is below 30%.',reward:true}
+  ]}
+};
+
+var lessonOverlay = document.getElementById('lessonOverlay');
+var lessonBody    = document.getElementById('lessonBody');
+var progFill      = document.getElementById('progFill');
+var langPill      = document.getElementById('langPill');
+var lang=appLang, stepIdx=0, awardedRun={}, answered={}, lessonEverDone=false;
+
+function openLesson(){
+  lang=appLang; stepIdx=0; awardedRun={}; answered={}; selectedMatch={left:null,right:null,done:{}};
+  langPill.textContent='🌐 '+lang.toUpperCase();
+  lessonOverlay.classList.add('show');
+  renderLesson();
+}
+function closeLesson(){ lessonOverlay.classList.remove('show'); }
+
+function award(idx){ if(awardedRun[idx]) return; awardedRun[idx]=true; addGems(30); }
+function runGems(){ return Object.keys(awardedRun).length*30; }
+
+/* a guiding pet + speech bubble */
+function coach(petId, inner, cls){
+  var p = PET_BY_ID[petId] || PETS[0];
+  return '<div class="coach"><div class="coach-pet">'+petWrapHTML(p,0)+'</div>'
+       + '<div class="coach-bubble '+(cls||'')+'">'+inner+'</div></div>';
+}
+function explainHTML(s, ok){
+  return coach(s.pet, ok ? s.good : s.bad, ok ? 'ok' : 'no');
+}
+
+function renderLesson(){
+  var d=COURSE[lang], steps=d.steps, total=steps.length;
+  if(stepIdx>=total){ renderDone(d); return; }
+  var s=steps[stepIdx];
+  progFill.style.width=Math.round((stepIdx+1)/(total+1)*100)+'%';
+  var h='<div class="lkick">'+d.kicker+'</div>';
+  if(stepIdx===0){
+    h += '<div class="lesson-meta"><span class="lmeta">⏱ '+d.mTime+'</span><span class="lmeta xp">⭐ '+d.mXp+'</span><span class="lmeta diff">'+d.mDiff+'</span></div>';
+  }
+  if(['reveal','slider','match','decision','calc','summary'].indexOf(s.type)>-1){ renderInteractive(d,s,h); return; }
+  if(s.type==='teach'){
+    h += '<h2 class="lesson-h">'+s.title+'</h2>';
+    h += coach(s.pet, s.lines.map(function(l){return '<p>'+l+'</p>';}).join(''));
+    if(s.factors){
+      s.factors.forEach(function(f,i){
+        h += '<div class="factor"><div class="pct" style="background:'+FACTOR_COLORS[i]+'">'+f[0]+'</div>'
+           + '<div><div class="ftit">'+f[1]+'</div><div class="fdesc">'+f[2]+'</div></div></div>';
+      });
+    }
+    if(s.callout){ h += '<div class="callout">'+s.callout+'</div>'; }
+    h += '<button class="lesson-btn" data-act="next">'+d.cont+'</button>';
+  } else { // quiz
+    h += '<div class="quiz-kick">'+d.quizKick+'</div>';
+    h += coach(s.pet, '<p>'+s.q+'</p>');
+    s.opts.forEach(function(o,i){
+      h += '<button class="quiz-opt" data-opt="'+i+'"'+(o.correct?' data-correct="1"':'')+'>'+o.t+'</button>';
+    });
+    h += '<div class="quiz-explain" id="quizExplain"></div>';
+    h += '<button class="lesson-btn" id="quizNext" data-act="next" disabled>'+d.next+'  +30 💎</button>';
+  }
+  lessonBody.innerHTML=h;
+  lessonBody.scrollTop=0;
+  if(s.type==='quiz' && answered[stepIdx]) restoreQuiz(s);
+  startBlink();
+}
+
+function renderInteractive(d,s,h){
+  h += '<h2 class="lesson-h">'+s.title+'</h2>';
+  if(s.type==='reveal'){
+    h += coach(s.pet,'<p>'+s.prompt+'</p>')+'<div class="lesson-stage"><button class="reveal-card" data-interact="reveal">✨ '+s.prompt+'</button><div class="reveal-answer">'+s.reveal+'</div></div><button class="lesson-btn" data-act="next" disabled>'+d.cont+'</button>';
+  } else if(s.type==='slider'){
+    h += coach(s.pet,'<p>'+s.q+'</p>')+'<div class="lesson-stage"><div class="slider-readout"><span id="sliderVal">$'+s.value+'</span><span id="sliderPct">'+Math.round(s.value/s.max*100)+'%</span></div><input class="range" id="creditSlider" type="range" min="'+s.min+'" max="'+s.max+'" value="'+s.value+'" step="25"><p class="hint">'+s.tip+'</p></div><button class="lesson-btn" data-act="next" disabled>'+d.cont+'</button>';
+  } else if(s.type==='match'){
+    var leftLabel=lang==='es'?'1. Elige un hábito':'1. Pick a habit', rightLabel=lang==='es'?'2. Elige su resultado':'2. Pick its result';
+    h += coach(s.pet,'<p>'+(lang==='es'?'Une cada hábito con lo que logra. Las parejas correctas se pondrán verdes.':'Match each habit to what it does. Correct pairs turn green.')+'</p>')+'<div class="lesson-stage"><div class="match-grid" id="matchGrid"><div class="match-column"><div class="match-label">'+leftLabel+'</div>';
+    s.left.forEach(function(v,i){h+='<button class="match-chip" data-side="left" data-i="'+i+'">'+v+'</button>';});
+    h+='</div><div class="match-column"><div class="match-label">'+rightLabel+'</div>';
+    s.right.forEach(function(v,i){h+='<button class="match-chip" data-side="right" data-i="'+i+'">'+v+'</button>';});
+    h += '</div></div><p class="match-status" id="matchHint">'+(lang==='es'?'Empieza con un hábito · 0 / ':'Start with a habit · 0 / ')+s.left.length+'</p></div><button class="lesson-btn" data-act="next" disabled>'+d.cont+'</button>';
+  } else if(s.type==='summary'){
+    h += coach(s.pet,'<p>'+(lang==='es'?'Guarda estas tres ideas y úsalas en tu próxima compra.':'Save these three ideas and use them on your next purchase.')+'</p>')+'<div class="summary-list">'+s.items.map(function(x){return '<div class="summary-item">✓ '+x+'</div>';}).join('')+'</div><button class="lesson-btn" data-act="next">'+d.cont+'</button>';
+  } else {
+    h += '<div class="quiz-kick">'+d.quizKick+'</div>'+coach(s.pet,'<p>'+s.q+'</p>');
+    s.opts.forEach(function(o,i){h+='<button class="quiz-opt" data-opt="'+i+'"'+(o.correct?' data-correct="1"':'')+'>'+o.t+'</button>';});
+    h += '<div class="quiz-explain" id="quizExplain"></div><button class="lesson-btn" id="quizNext" data-act="next" disabled>'+d.next+'</button>';
+  }
+  lessonBody.innerHTML=h; lessonBody.scrollTop=0;
+  /* Decision and calculator stages use quiz controls too; restoring them here
+     means a language swap always redraws their question, choices, and feedback. */
+  if((s.type==='decision'||s.type==='calc') && answered[stepIdx]) restoreQuiz(s);
+  startBlink();
+}
+
+function renderDone(d){
+  progFill.style.width='100%';
+  var h='<div class="complete-wrap" id="completeWrap">'
+    + '<div class="complete-circle">⭐</div>'
+    + '<h2>'+d.doneTitle+'</h2>'
+    + '<div class="csub">'+d.doneSub+'</div>'
+    + '<div class="gem-badge-gold">+'+runGems()+' 💎</div><br>'
+    + '<div class="completion-perks"><span class="perk">⭐ +180 XP</span><span class="perk">🔥 '+(lang==='es'?'racha protegida':'streak protected')+'</span><span class="perk">🏅 '+(lang==='es'?'Inicio de crédito':'Credit starter')+'</span></div>'
+    + coach('foxy','<p>'+(lang==='es'?'¡Estoy orgulloso de ti! Tu próximo hábito empieza hoy.':'I’m proud of you! Your next good habit starts today.')+'</p>','ok')
+    + '<button class="lesson-btn" data-act="home">'+d.contLearn+'</button>'
+    + '<button class="lesson-btn sage" data-act="replay">'+d.replay+'</button>'
+    + '</div>';
+  lessonBody.innerHTML=h;
+  lessonBody.scrollTop=0;
+  completeUnlock();
+  setTimeout(function(){ var cw=document.getElementById('completeWrap'); if(cw) burst(cw,'legendary'); }, 250);
+}
+
+/* re-apply an answered quiz (e.g. after a language toggle) */
+function restoreQuiz(s){
+  var a=answered[stepIdx];
+  document.querySelectorAll('.quiz-opt').forEach(function(b){
+    var i=+b.getAttribute('data-opt');
+    if(b.getAttribute('data-correct')) b.classList.add('correct');
+    else if(i===a.pick) b.classList.add('wrong');
+  });
+  var ex=document.getElementById('quizExplain');
+  ex.innerHTML=explainHTML(s, a.correct); ex.classList.add('show');
+  var qn=document.getElementById('quizNext'); if(qn) qn.removeAttribute('disabled');
+}
+
+function completeUnlock(){
+  if(lessonEverDone) return;
+  lessonEverDone=true;
+  petState.equipped.forEach(function(id){petState.levels[id]=(petState.levels[id]||1)+1;});savePetState();
+  xp+=Math.round(90*(1+petStats().xp));localStorage.setItem('avanza-xp',xp);
+  if(petStats().luck&&Math.random()<petStats().luck)addGems(10);
+  // unlock the next two lesson nodes on the Unit 1 path (🔒 -> 📘)
+  var locked=document.querySelectorAll('#screen-home .path .node.locked');
+  for(var i=0;i<locked.length && i<2;i++){
+    var n=locked[i];
+    n.classList.remove('locked');
+    n.classList.add('avail');
+    n.innerHTML='📘';
+  }
+}
+
+/* lesson interactions (delegated) */
+lessonBody.addEventListener('click', function(e){
+  var opt=e.target.closest('.quiz-opt');
+  if(opt && !answered[stepIdx]){
+    var i=+opt.getAttribute('data-opt');
+    var isCorrect=!!opt.getAttribute('data-correct');
+    answered[stepIdx]={pick:i, correct:isCorrect};
+    if(isCorrect){ opt.classList.add('correct'); }
+    else {
+      opt.classList.add('wrong');
+      var right=lessonBody.querySelector('.quiz-opt[data-correct]');
+      if(right) right.classList.add('correct');
+    }
+    var s=COURSE[lang].steps[stepIdx];
+    var ex=document.getElementById('quizExplain');
+    ex.innerHTML=explainHTML(s, isCorrect); ex.classList.add('show');
+    award(stepIdx);            // +30 regardless of correctness
+    var qn=document.getElementById('quizNext'); if(qn) qn.removeAttribute('disabled');
+    startBlink();
+    return;
+  }
+  var btn=e.target.closest('[data-act]');
+  if(!btn) return;
+  var act=btn.getAttribute('data-act');
+  if(act==='next'){ var current=COURSE[lang].steps[stepIdx]; if(current.reward) award(stepIdx); stepIdx++; renderLesson(); }
+  else if(act==='home'){ closeLesson(); }
+  else if(act==='replay'){ stepIdx=0; awardedRun={}; answered={}; selectedMatch={left:null,right:null,done:{}}; renderLesson(); }
+});
+
+lessonBody.addEventListener('input', function(e){
+  if(e.target.id!=='creditSlider') return;
+  var v=+e.target.value, s=COURSE[lang].steps[stepIdx], pct=Math.round(v/s.max*100);
+  document.getElementById('sliderVal').textContent='$'+v; document.getElementById('sliderPct').textContent=pct+'%';
+  if(v<=s.target) lessonBody.querySelector('[data-act="next"]').removeAttribute('disabled');
+});
+var selectedMatch={left:null,right:null,done:{}};
+lessonBody.addEventListener('click', function(e){
+  var reveal=e.target.closest('[data-interact="reveal"]');
+  if(reveal){reveal.classList.add('open');lessonBody.querySelector('[data-act="next"]').removeAttribute('disabled');return;}
+  var chip=e.target.closest('.match-chip'); if(!chip) return;
+  var s=COURSE[lang].steps[stepIdx], side=chip.dataset.side, i=+chip.dataset.i;
+  selectedMatch[side]=i; document.querySelectorAll('.match-chip[data-side="'+side+'"]').forEach(function(x){x.classList.remove('selected')}); chip.classList.add('selected');
+  if(selectedMatch.left!==null&&selectedMatch.right!==null){
+    var good=s.pairs[selectedMatch.left]===selectedMatch.right, hint=document.getElementById('matchHint');
+    if(good){selectedMatch.done[selectedMatch.left]=true;document.querySelectorAll('.match-chip[data-i="'+selectedMatch.left+'"]').forEach(function(x){x.classList.add('matched');x.classList.remove('selected')});hint.innerHTML=(lang==='es'?'<b>¡Bien!</b> Pareja encontrada · ':'<b>Nice!</b> Pair found · ')+Object.keys(selectedMatch.done).length+' / '+s.left.length;}
+    else {chip.classList.add('no-match');setTimeout(function(){chip.classList.remove('no-match')},400);hint.innerHTML=lang==='es'?'<b>Intenta otra vez.</b> Ese resultado no corresponde todavía.':'<b>Try again.</b> That result does not match this habit yet.';}
+    document.querySelectorAll('.match-chip.selected').forEach(function(x){x.classList.remove('selected')});
+    selectedMatch.left=null;selectedMatch.right=null;
+    if(Object.keys(selectedMatch.done).length===s.left.length) lessonBody.querySelector('[data-act="next"]').removeAttribute('disabled');
+  }
+});
+
+/* language toggle (lesson only) */
+langPill.addEventListener('click', function(){
+  lang = (lang==='es') ? 'en' : 'es';
+  setAppLanguage(lang);
+  langPill.textContent = '🌐 ' + (lang==='es'?'ES':'EN');
+  langPill.setAttribute('aria-label', lang==='es' ? 'Cambiar a inglés' : 'Switch to Spanish');
+  /* Match selections are text labels, so reset only the unfinished selection
+     state while retaining the learner's position and completed answers. */
+  selectedMatch={left:null,right:null,done:{}};
+  renderHomeLanguage();
+  renderLesson();
+});
+document.getElementById('lessonClose').addEventListener('click', closeLesson);
+
+/* START node + unlocked nodes open the lesson */
+document.getElementById('startNode').addEventListener('click', openLesson);
+document.querySelector('#screen-home .path').addEventListener('click', function(e){
+  var n=e.target.closest('.node.avail');
+  if(n) openLesson();
+});
+
+/* keep harmless path tap feedback for done nodes */
+document.querySelectorAll('#screen-home .node.done').forEach(function(n){
+  n.addEventListener('click', function(){
+    n.style.transform='scale(.9)';
+    setTimeout(function(){ n.style.transform=''; }, 150);
+  });
+});
+
+/* ---------- scale the phone mockup to fill the viewport (crisp, proportional) ---------- */
+function fitPhone(){
+  var vw = window.innerWidth || 390, vh = window.innerHeight || 820;
+  var s = Math.min(vw * 0.96 / 390, vh * 0.975 / 820);
+  if(!isFinite(s) || s < 0.2) s = 1;           // guard against 0-size frames
+  document.documentElement.style.setProperty('--scale', s.toFixed(3));
+}
+window.addEventListener('resize', fitPhone);
+window.addEventListener('load', fitPhone);
+if(window.ResizeObserver){ new ResizeObserver(fitPhone).observe(document.documentElement); }
+fitPhone();
+requestAnimationFrame(fitPhone);
+setTimeout(fitPhone, 250);
+
+/* ---------- INIT ---------- */
+renderCollection();
+var mascotPet=document.getElementById('mascotPet');
+if(mascotPet){ mascotPet.innerHTML=petWrapHTML(PET_BY_ID['foxy'],0); }
+var budLeft=document.getElementById('budLeft');
+var budRight=document.getElementById('budRight');
+if(budLeft){ budLeft.innerHTML=petWrapHTML(PET_BY_ID['bunny'],1)+'<span class="buddy-tag">Bunny</span>'; }
+if(budRight){ budRight.innerHTML=petWrapHTML(PET_BY_ID['rana'],2)+'<span class="buddy-tag">Rana</span>'; }
+document.getElementById('gemStore').addEventListener('click',function(e){var b=e.target.closest('[data-gems]');if(b)addGems(+b.dataset.gems);});
+function showFeature(icon,title,text){document.getElementById('featureArt').textContent=icon;document.getElementById('featureTitle').textContent=title;document.getElementById('featureText').textContent=text;document.getElementById('featureModal').classList.add('show');}document.getElementById('featureClose').onclick=document.getElementById('featureOkay').onclick=function(){document.getElementById('featureModal').classList.remove('show')};document.getElementById('addFriendBtn').addEventListener('click',function(){showFeature('👫','Friends are coming!','Build a squad, send encouragement, and climb the rankings together.');});
+document.getElementById('tradeBtn').addEventListener('click',function(){showFeature('🔄','Pet trading','Trade duplicate pets with friends for collection progress. Coming soon!');});
+var leaderboardData={friends:[['Marisol R.','&#x1F98A;',1240,'#FFE1CC'],['Diego P.','&#x1F428;',1180,'#DCE9FA'],['Yamilet C.','&#x1F438;',1065,'#E3F3D9'],['You','&#x1F430;',500,'#F3E3FB']],global:[['Aisha M.','&#x1F451;',128490,'#FCE9D6'],['Luna C.','&#x1F31F;',123780,'#F5E4FC'],['Mateo R.','&#x1F98B;',119860,'#E3F3D9'],['Camila V.','&#x1F409;',115425,'#DCE9FA'],['Noah G.','&#x1F985;',111900,'#FFF1C8'],['You','&#x1F430;',500,'#F3E3FB']]};function renderLeaderboard(kind){var rows=leaderboardData[kind]||leaderboardData.friends,html='';rows.forEach(function(person,index){var rank=index+1,rankClass=rank<4?' r'+rank:'',isYou=person[0]==='You';html+='<div class="lb-row'+(isYou?' me':'')+'"><div class="lb-rank'+rankClass+'">'+rank+'</div><div class="lb-avatar" style="background:'+person[3]+';">'+person[1]+'</div><div class="lb-name">'+person[0]+'</div><div class="lb-pts">&#x1F48E; '+person[2].toLocaleString()+'</div></div>';});document.querySelector('#screen-board .lb-list').innerHTML=html;}document.querySelectorAll('#screen-board .lb-tab').forEach(function(tab,index){tab.addEventListener('click',function(){document.querySelectorAll('#screen-board .lb-tab').forEach(function(t){t.classList.remove('active')});tab.classList.add('active');renderLeaderboard(index===1?'global':'friends');});});renderLeaderboard('friends');
+var dailyModal=document.getElementById('dailyModal'),today=new Date().toDateString();document.getElementById('dailyGrid').innerHTML=[1,2,3,4,5,6,7].map(function(n){return '<div class="daily-day '+(n===1?'today claimable ':'')+'" data-day="'+n+'">Day '+n+'<span>🎁</span></div>'}).join('');function claimDaily(){if(localStorage.getItem('avanza-daily')===today)return;addGems(25);dailyModal.classList.remove('show');localStorage.setItem('avanza-daily',today);showToast('🎁 +25 gems!')}function openDaily(){dailyModal.classList.add('show')}document.getElementById('dailyClose').onclick=function(){dailyModal.classList.remove('show')};document.getElementById('dailyGrid').onclick=function(e){if(e.target.closest('[data-day="1"]'))claimDaily()};var onboard=document.getElementById('onboard');document.querySelectorAll('[data-onboard]').forEach(function(b){b.addEventListener('click',function(){setAppLanguage(b.dataset.onboard);renderHomeLanguage();onboard.classList.add('hide');openDaily();});});document.getElementById('premiumBtn').onclick=function(){showFeature('⭐','Free vs Premium','');document.getElementById('featureText').innerHTML='<div class="premium-compare"><div><b>Free</b><p>☑ Daily lessons</p><p>☐ Unlimited chest opens</p><p>☐ Monthly pet</p></div><div><b>Premium</b><p>☑ Unlimited lessons</p><p>☑ Chest freedom</p><p>☑ Monthly pet</p></div></div>';};
+document.getElementById('premiumBtn').onclick=function(){showFeature('⭐','Free vs Premium','');document.getElementById('featureText').innerHTML='<div class="premium-compare"><div><b>Free</b><p>☑ Daily lessons</p><p>☐ No ads</p><p>☐ Extra daily gems</p><p>☐ Improved learning paths</p></div><div><b>Premium</b><p>☑ No ads</p><p>☑ Extra daily gems</p><p>☑ Improved learning paths</p><p>☑ Streak protection + monthly pet</p></div></div>';};
+var dayOneReward=document.querySelector('#dailyGrid [data-day="1"]');if(dayOneReward){dayOneReward.setAttribute('role','button');dayOneReward.setAttribute('tabindex','0');dayOneReward.onclick=function(event){event.stopPropagation();claimDaily();};dayOneReward.onkeydown=function(event){if(event.key==='Enter'||event.key===' '){event.preventDefault();claimDaily();}};}
+var NEW_UI_COPY={en:{dailyTitle:'Daily rewards',dailySub:'Come back each day to grow your streak.',dailyNote:'Tap the glowing Day 1 card to claim today\'s 25 gems.',dailyHint:'TAP DAY 1 ABOVE',day:'Day',claimed:'Today\'s reward is already collected.',claimedLabel:'Collected!',premiumTitle:'Avanza Premium',premiumSub:'Make every learning day a little brighter.',perks:['No ads, ever','Extra daily gems','Improved learning paths','Streak protection + monthly pet'],explore:'Explore Premium',gemTitle:'Gem packs',gemSub:'Top up gems to unlock more chests.',packs:['Pocket','Stash','Treasure'],friends:'Friends',friendSub:'Build your learning squad',addFriend:'Add friend',trade:'Trade pets',coming:'Coming soon',squad:'Active squad',squadSub:'Equip up to 3 pets for bonuses',free:'Free',premium:'Premium',dailyLesson:'Daily lessons',noAds:'No ads',extraGems:'Extra daily gems',learning:'Improved learning paths',premiumLast:'Streak protection + monthly pet'},es:{dailyTitle:'Recompensas diarias',dailySub:'Vuelve cada dia para aumentar tu racha.',dailyNote:'Toca la tarjeta brillante del Dia 1 para reclamar 25 gemas.',dailyHint:'TOCA EL DIA 1 ARRIBA',day:'Dia',claimed:'La recompensa de hoy ya fue reclamada.',claimedLabel:'Reclamado!',premiumTitle:'Avanza Premium',premiumSub:'Haz que cada dia de aprendizaje sea mejor.',perks:['Sin anuncios','Gemas diarias extra','Rutas de aprendizaje mejoradas','Proteccion de racha + mascota mensual'],explore:'Explorar Premium',gemTitle:'Paquetes de gemas',gemSub:'Consigue gemas para abrir mas cofres.',packs:['Bolsillo','Reserva','Tesoro'],friends:'Amigos',friendSub:'Crea tu equipo de aprendizaje',addFriend:'Agregar amigo',trade:'Intercambiar mascotas',coming:'Proximamente',squad:'Equipo activo',squadSub:'Equipa hasta 3 mascotas con bonificaciones',free:'Gratis',premium:'Premium',dailyLesson:'Lecciones diarias',noAds:'Sin anuncios',extraGems:'Gemas diarias extra',learning:'Aprendizaje mejorado',premiumLast:'Proteccion de racha + mascota mensual'}};
+function renderDailyReward(){var c=NEW_UI_COPY[appLang],grid=document.getElementById('dailyGrid'),already=localStorage.getItem('avanza-daily')===today;grid.innerHTML=[1,2,3,4,5,6,7].map(function(n){var active=n===1&&!already;return '<button type="button" class="daily-day '+(n===1?'today ':'')+(active?'claimable ':'')+'" data-day="'+n+'" '+(active?'':'disabled')+'>'+c.day+' '+n+'<span>&#x1F381;</span></button>';}).join('');var dayOne=grid.querySelector('[data-day="1"]');dayOne.onclick=function(){if(already){showToast(c.claimed);return;}addGems(25);localStorage.setItem('avanza-daily',today);dailyModal.classList.remove('show');showToast('&#x1F381; +25 '+(appLang==='es'?'gemas!':'gems!'));renderDailyReward();};}
+function renderNewFeatureLanguage(){var c=NEW_UI_COPY[appLang],q=function(s){return document.querySelector(s)},qa=function(s){return document.querySelectorAll(s)};q('#dailyModal h2').innerHTML='&#x1F381; '+c.dailyTitle;q('#dailyModal h2').nextElementSibling.textContent=c.dailySub;q('.daily-note').textContent=c.dailyNote;q('#dailyClaim').textContent='&#x2191; '+c.dailyHint+' &#x2191;';q('.plan-card>b').innerHTML='&#x2B50; '+c.premiumTitle;q('.plan-card>p').textContent=c.premiumSub;qa('.premium-perks span').forEach(function(el,i){el.childNodes[el.childNodes.length-1].nodeValue=' '+c.perks[i];});q('#premiumBtn').textContent=c.explore;q('#gemStore>b').innerHTML='&#x1F48E; '+c.gemTitle;q('#gemStore>p').textContent=c.gemSub;qa('.gem-pack-name').forEach(function(el,i){el.textContent=c.packs[i]});q('.social-bar b').textContent=c.friends;q('.social-bar small').textContent=c.friendSub;q('#addFriendBtn').textContent='＋ '+c.addFriend;q('#tradeBtn').childNodes[0].nodeValue='&#x1F504; '+c.trade+' ';q('#tradeBtn span').textContent=c.coming;q('.squad-card b').textContent=c.squad;q('.squad-card small').textContent=c.squadSub;document.getElementById('addFriendBtn').onclick=function(){showFeature('&#x1F46B;',c.friends,c.friendSub);};document.getElementById('tradeBtn').onclick=function(){showFeature('&#x1F504;',c.trade,appLang==='es'?'Intercambia mascotas duplicadas con amigos. Proximamente!':'Trade duplicate pets with friends. Coming soon!');};document.getElementById('premiumBtn').onclick=function(){showFeature('&#x2B50;',c.free+' vs '+c.premium,'');document.getElementById('featureText').innerHTML='<div class="premium-compare"><div><b>'+c.free+'</b><p>&#x2611; '+c.dailyLesson+'</p><p>&#x2610; '+c.noAds+'</p><p>&#x2610; '+c.extraGems+'</p><p>&#x2610; '+c.learning+'</p></div><div><b>'+c.premium+'</b><p>&#x2611; '+c.noAds+'</p><p>&#x2611; '+c.extraGems+'</p><p>&#x2611; '+c.learning+'</p><p>&#x2611; '+c.premiumLast+'</p></div></div>';};}
+/* Keep the daily reward state in one place: Day 1 is both the highlighted and
+   claimable card, and all other cards remain visibly locked. */
+renderDailyReward=function(){
+  var c=NEW_UI_COPY[appLang],grid=document.getElementById('dailyGrid'),already=localStorage.getItem('avanza-daily')===today;
+  grid.innerHTML=[1,2,3,4,5,6,7].map(function(n){
+    var dayOne=n===1,claimable=dayOne&&!already;
+    return '<button type="button" class="daily-day '+(dayOne?'today ':'')+(claimable?'claimable ':'')+'" data-day="'+n+'" '+(claimable?'':'disabled')+'>'+c.day+' '+n+'<span>🎁</span></button>';
+  }).join('');
+  var dayOne=grid.querySelector('[data-day="1"]');
+  if(!dayOne)return;
+  dayOne.onclick=function(){
+    if(already){showToast(c.claimed);return;}
+    addGems(25);
+    localStorage.setItem('avanza-daily',today);
+    dailyModal.classList.remove('show');
+    showToast('🎁 +25 '+(appLang==='es'?'gemas!':'gems!'));
+    renderDailyReward();
+  };
+};
+var baseSetAppLanguage=setAppLanguage;setAppLanguage=function(next){baseSetAppLanguage(next);renderHomeLanguage();renderNewFeatureLanguage();renderDailyReward();};renderNewFeatureLanguage();renderDailyReward();
+var PET_UI_COPY={en:{roles:{'Gem boost':'Gem boost','XP boost':'XP boost','Chest luck':'Chest luck','Streak guard':'Streak guard'},equip:'Equip',unequip:'Unequip',level:'Lv.',empty:'Equip pets in Collection',you:'You'},es:{roles:{'Gem boost':'Bono de gemas','XP boost':'Bono de XP','Chest luck':'Suerte de cofres','Streak guard':'Proteccion de racha'},equip:'Equipar',unequip:'Quitar',level:'Nv.',empty:'Equipa mascotas en Coleccion',you:'Tu'}};
+function localizePetAndRankUI(){var c=PET_UI_COPY[appLang];document.querySelectorAll('.pet-role').forEach(function(el){el.textContent=c.roles[el.textContent]||el.textContent;});document.querySelectorAll('[data-equip]').forEach(function(el){el.textContent=el.textContent==='Unequip'||el.textContent==='Quitar'?c.unequip:c.equip;});document.querySelectorAll('.plushie .name').forEach(function(el){if(el.textContent.indexOf('Lv.')===0||el.textContent.indexOf('Nv.')===0)el.textContent=c.level+el.textContent.replace(/^Lv\.|^Nv\./,'');});var empty=document.querySelector('#activePets small');if(empty)empty.textContent=c.empty;document.querySelectorAll('.lb-name').forEach(function(el){if(el.textContent==='You'||el.textContent==='Tu')el.textContent=c.you;});}
+var baseRenderCollection=renderCollection;renderCollection=function(){baseRenderCollection();localizePetAndRankUI();};var baseRenderLeaderboard=renderLeaderboard;renderLeaderboard=function(kind){baseRenderLeaderboard(kind);localizePetAndRankUI();};var languageSetWithNewFeatures=setAppLanguage;setAppLanguage=function(next){languageSetWithNewFeatures(next);try{renderCollection();}catch(error){console.warn('Collection render skipped',error);}var activeTab=document.querySelector('#screen-board .lb-tab.active');try{renderLeaderboard(activeTab&&activeTab.textContent===UI_COPY.en.global?'global':'friends');}catch(error){console.warn('Leaderboard render skipped',error);}};try{renderCollection();}catch(error){console.warn('Collection startup skipped',error);}try{renderLeaderboard('friends');}catch(error){console.warn('Leaderboard startup skipped',error);}
+function cleanFeatureEntities(){var trade=document.getElementById('tradeBtn'),isSpanish=appLang==='es';if(trade)trade.childNodes[0].nodeValue=(isSpanish?'Intercambiar mascotas ':'Trade pets ');document.getElementById('tradeBtn').onclick=function(){showFeature('',isSpanish?'Intercambiar mascotas':'Trade pets',isSpanish?'Intercambia mascotas duplicadas con amigos. Proximamente!':'Trade duplicate pets with friends. Coming soon!');};document.getElementById('premiumBtn').onclick=function(){var free=isSpanish?'Gratis':'Free',premium='Premium';showFeature('',free+' vs '+premium,'');document.getElementById('featureText').innerHTML='<div class="premium-compare"><div><b>'+free+'</b><p>Daily lessons</p><p>No ads</p><p>Extra daily gems</p><p>Improved learning paths</p></div><div><b>'+premium+'</b><p>No ads</p><p>Extra daily gems</p><p>Improved learning paths</p><p>Streak protection + monthly pet</p></div></div>';};}
+var featureLanguageSet=setAppLanguage;setAppLanguage=function(next){featureLanguageSet(next);cleanFeatureEntities();};cleanFeatureEntities();
+/* ---------- KNOWLEDGE DUEL MODE ---------- */
+var duelElo=Number(localStorage.getItem('avanza-duel-elo')||1000),duelScope='friends',duelMetric='gems',duelState=null,duelTick=null,duelAiTimer=null;
+var DUEL_COPY={en:{title:'Knowledge Duel',sub:'Race through financial questions with your active squad.',rank:'Bronze II',rankSub:'Your duel rating',you:'You',squad:'Active squad',ready:'Ready to duel?',readyText:'Start a 10-question duel. Your opponent answers correctly 60% of the time after 3–5 seconds.',start:'START DUEL',again:'DUEL AGAIN',round:'Question',correct:'Correct! Your squad dealt',wrong:'Not quite. Your opponent gained ground.',timeout:'Time ran out. Your opponent gained ground.',win:'You win! +',lose:'Duel complete. Keep learning and try again.',tie:'It is a draw. No ELO changed.',gems:'Gems',elo:'Duel ELO',nav:['Learn','Ranks','Duel','Chests','More'],questions:[['What does credit utilization measure?',['How much available credit you use','How long an account has existed','Your savings interest rate'],0],['Which habit can help protect your credit?',['Paying on time','Ignoring statements','Always using the limit'],0],['What is a budget?',['A spending plan','A type of debt','A credit score'],0],['A high-interest balance is best handled by…',['Paying more than the minimum','Skipping every payment','Opening new cards'],0],['What is an emergency fund for?',['Unexpected expenses','Buying every want','Raising your credit limit'],0],['Which can increase borrowing cost?',['Interest rate','A lower balance','Paying early'],0],['What is a credit limit?',['The maximum you can borrow','Your monthly income','A savings goal'],0],['Which is a good first step before a purchase?',['Compare price and budget','Borrow without checking','Ignore the total cost'],0],['What does a due date tell you?',['When payment is expected','When a card expires','Your credit limit'],0],['Why review a statement?',['To spot charges and track spending','To avoid any payments','To change your name'],0]]},es:{title:'Duelo de conocimientos',sub:'Responde preguntas financieras con tu equipo activo.',rank:'Bronce II',rankSub:'Tu clasificacion de duelo',you:'Tu',squad:'Equipo activo',ready:'Listo para el duelo?',readyText:'Inicia un duelo de 10 preguntas. Tu oponente acierta el 60% de las veces despues de 3–5 segundos.',start:'INICIAR DUELO',again:'JUGAR OTRA VEZ',round:'Pregunta',correct:'Correcto! Tu equipo hizo',wrong:'No es correcto. Tu oponente avanzo.',timeout:'Se acabo el tiempo. Tu oponente avanzo.',win:'Ganaste! +',lose:'Duelo terminado. Sigue aprendiendo e intentalo de nuevo.',tie:'Empate. El ELO no cambio.',gems:'Gemas',elo:'ELO de duelo',nav:['Aprender','Rangos','Duelo','Cofres','Mas'],questions:[['Que mide la utilizacion de credito?',['Cuanto credito disponible usas','Cuanto tiempo existe una cuenta','El interes de tus ahorros'],0],['Que habito protege tu credito?',['Pagar a tiempo','Ignorar estados de cuenta','Usar siempre todo el limite'],0],['Que es un presupuesto?',['Un plan de gastos','Un tipo de deuda','Un puntaje de credito'],0],['Un saldo con alto interes se maneja mejor al…',['Pagar mas que el minimo','Omitir todos los pagos','Abrir nuevas tarjetas'],0],['Para que sirve un fondo de emergencia?',['Gastos inesperados','Comprar cualquier deseo','Subir tu limite'],0],['Que puede aumentar el costo de pedir prestado?',['La tasa de interes','Un saldo menor','Pagar temprano'],0],['Que es un limite de credito?',['El maximo que puedes pedir','Tu ingreso mensual','Una meta de ahorro'],0],['Que paso es bueno antes de comprar?',['Comparar precio y presupuesto','Pedir prestado sin revisar','Ignorar el costo total'],0],['Que indica una fecha de pago?',['Cuando se espera el pago','Cuando expira una tarjeta','Tu limite de credito'],0],['Por que revisar un estado de cuenta?',['Detectar cargos y seguir gastos','Evitar todos los pagos','Cambiar tu nombre'],0]]}};
+var DUEL_BOARD={friends:[['Marisol R.','🦊',1240,1188,'#FFE1CC'],['Diego P.','🐨',1180,1140,'#DCE9FA'],['Yamilet C.','🐸',1065,1104,'#E3F3D9'],['You','🐰',500,0,'#F3E3FB'],['Kevin T.','🐯',470,1061,'#FFF1CC']],global:[['Aisha M.','👑',128490,1842,'#FCE9D6'],['Luna C.','🌟',123780,1794,'#F5E4FC'],['Mateo R.','🦝',119860,1760,'#E3F3D9'],['Camila V.','🐉',115425,1720,'#DCE9FA'],['Noah G.','🦅',111900,1694,'#FFF1C8'],['You','🐰',500,0,'#F3E3FB']]};
+function duelCopy(){return DUEL_COPY[appLang]||DUEL_COPY.en;}
+function duelRank(){return duelElo>=1400?'Gold I':duelElo>=1200?'Silver I':'Bronze II';}
+/* Duels use the learner's equipped squad exactly; they no longer substitute a
+   canned team when a squad has been selected. */
+function duelPets(){return (petState.equipped||[]).filter(function(id){return PET_BY_ID[id];}).slice(0,3);}
+function duelDamage(){var score=0;duelPets().forEach(function(id){var p=PET_BY_ID[id],level=petState.levels[id]||1,m={common:1,rare:1.5,epic:2.2,legendary:3.2,secret:5}[p.rarity]||1;score+=level*2+m;});return Math.round(8+score);}
+function renderDuelSquad(){
+  var ids=duelPets(),el=document.getElementById('duelSquad');
+  if(!ids.length){el.innerHTML='<span class="duel-empty">'+(appLang==='es'?'Equipa mascotas en Colección':'Equip pets in Collection')+'</span>';return;}
+  el.innerHTML=ids.map(function(id){
+    var p=PET_BY_ID[id],level=petState.levels[id]||1;
+    return '<span class="duel-pet-chip '+p.rarity+'" title="'+p.name+' · Lv. '+level+'"><img src="assets/pets/'+(p.asset||p.id)+'.png" alt="'+p.name+'"><i class="duel-pet-level">Lv. '+level+'</i></span>';
+  }).join('');
+}
+function renderDuelLanguage(){var c=duelCopy(),nav=document.querySelectorAll('.navbtn');document.getElementById('duelTitle').textContent=c.title;document.getElementById('duelSub').textContent=c.sub;document.getElementById('duelRank').textContent=duelRank();document.getElementById('duelRankSub').textContent=c.rankSub;document.getElementById('duelYou').textContent=c.you;document.getElementById('duelSquadLabel').textContent=c.squad;document.getElementById('duelElo').textContent=duelElo.toLocaleString();document.querySelectorAll('.board-mode').forEach(function(b){b.textContent=b.dataset.boardMode==='elo'?'⚔ '+c.elo:'💎 '+c.gems;});nav.forEach(function(b,i){var icon=b.querySelector('.icon').textContent;b.innerHTML='<span class="icon">'+icon+'</span>'+c.nav[i];});renderDuelSquad();if(!duelState)renderDuelLanding();}
+function setDuelHealth(){document.getElementById('duelYouHp').textContent=duelState.youHp;document.getElementById('duelEnemyHp').textContent=duelState.enemyHp;document.getElementById('duelYouBar').style.width=Math.max(0,duelState.youHp)+'%';document.getElementById('duelEnemyBar').style.width=Math.max(0,duelState.enemyHp)+'%';}
+function renderDuelLanding(){var c=duelCopy();document.getElementById('duelRound').textContent='10 '+(appLang==='es'?'preguntas':'questions');document.getElementById('duelTimer').textContent='10s';document.getElementById('duelQuestionTitle').textContent=c.ready;document.getElementById('duelQuestion').textContent=c.readyText;document.getElementById('duelChoices').innerHTML='';document.getElementById('duelFeedback').textContent='';document.getElementById('duelStart').textContent=c.start;document.getElementById('duelYouHp').textContent='100';document.getElementById('duelEnemyHp').textContent='100';document.getElementById('duelYouBar').style.width='100%';document.getElementById('duelEnemyBar').style.width='100%';}
+function clearDuelTimers(){clearInterval(duelTick);clearTimeout(duelAiTimer);duelTick=null;duelAiTimer=null;}
+function startDuel(){clearDuelTimers();duelState={index:0,youHp:100,enemyHp:100,youWrong:0,enemyWrong:0,playerDone:false,aiDone:false,seconds:10};document.getElementById('duelStart').textContent=duelCopy().again;startDuelRound();}
+function startDuelRound(){if(!duelState)return;if(duelState.index>=10||duelState.youHp<=0||duelState.enemyHp<=0){finishDuel();return;}var c=duelCopy(),q=c.questions[duelState.index];duelState.playerDone=false;duelState.aiDone=false;duelState.seconds=10;document.getElementById('duelRound').textContent=c.round+' '+(duelState.index+1)+' / 10';document.getElementById('duelTimer').textContent='10s';document.getElementById('duelQuestionTitle').textContent=q[0];document.getElementById('duelQuestion').textContent=appLang==='es'?'Elige la mejor respuesta antes de que el tiempo termine.':'Choose the best answer before time runs out.';document.getElementById('duelFeedback').textContent='';document.getElementById('duelChoices').innerHTML=q[1].map(function(option,i){return '<button class="duel-choice" data-answer="'+i+'">'+option+'</button>';}).join('');setDuelHealth();clearDuelTimers();duelTick=setInterval(function(){duelState.seconds--;document.getElementById('duelTimer').textContent=duelState.seconds+'s';if(duelState.seconds<=0){clearInterval(duelTick);resolvePlayer(-1,true);}},1000);duelAiTimer=setTimeout(resolveOpponent,3000+Math.random()*2000);}
+function resolvePlayer(answer,timedOut){if(!duelState||duelState.playerDone)return;var c=duelCopy(),q=c.questions[duelState.index],right=answer===q[2];duelState.playerDone=true;clearInterval(duelTick);document.querySelectorAll('.duel-choice').forEach(function(button){button.disabled=true;if(+button.dataset.answer===q[2])button.classList.add('correct');if(!right&&+button.dataset.answer===answer)button.classList.add('wrong');});if(right){var damage=duelDamage();duelState.enemyHp=Math.max(0,duelState.enemyHp-damage);document.getElementById('duelFeedback').textContent=c.correct+' '+damage+' '+(appLang==='es'?'de dano.':'damage.');}else{duelState.youWrong++;duelState.youHp=Math.max(0,duelState.youHp-10);document.getElementById('duelFeedback').textContent=timedOut?c.timeout:c.wrong;}setDuelHealth();duelMaybeAdvance();}
+function resolveOpponent(){if(!duelState||duelState.aiDone)return;duelState.aiDone=true;var correct=Math.random()<.6;if(correct){duelState.youHp=Math.max(0,duelState.youHp-12);}else duelState.enemyWrong++;setDuelHealth();duelMaybeAdvance();}
+function duelMaybeAdvance(){if(!duelState||!duelState.playerDone||!duelState.aiDone)return;clearDuelTimers();setTimeout(function(){if(!duelState)return;duelState.index++;startDuelRound();},700);}
+function finishDuel(){if(!duelState)return;clearDuelTimers();var c=duelCopy(),win=duelState.enemyHp<=0||(duelState.youHp>0&&duelState.youWrong<duelState.enemyWrong),tie=duelState.youHp>0&&duelState.enemyHp>0&&duelState.youWrong===duelState.enemyWrong;if(win){var gain=18+Math.max(0,duelState.enemyWrong-duelState.youWrong)*3;duelElo+=gain;localStorage.setItem('avanza-duel-elo',duelElo);duelPets().forEach(function(id){petState.levels[id]=(petState.levels[id]||1)+1;});savePetState();renderCollection();document.getElementById('duelFeedback').textContent=c.win+gain+' ELO · +1 '+(appLang==='es'?'nivel para tu equipo activo.':'level for your active squad.');}else document.getElementById('duelFeedback').textContent=tie?c.tie:c.lose;document.getElementById('duelQuestionTitle').textContent=win?(appLang==='es'?'Victoria de duelo!':'Duel victory!'):(tie?(appLang==='es'?'Empate':'Draw'):(appLang==='es'?'El oponente gana':'Opponent wins'));document.getElementById('duelQuestion').textContent=(appLang==='es'?'Errores: tu '+duelState.youWrong+' · oponente '+duelState.enemyWrong:'Mistakes: you '+duelState.youWrong+' · opponent '+duelState.enemyWrong);document.getElementById('duelChoices').innerHTML='';document.getElementById('duelStart').textContent=c.again;duelState=null;renderDuelLanguage();renderLeaderboard(duelScope);}
+document.getElementById('duelStart').addEventListener('click',startDuel);document.getElementById('duelChoices').addEventListener('click',function(event){var button=event.target.closest('[data-answer]');if(button)resolvePlayer(+button.dataset.answer,false);});
+function renderLeaderboard(scope){duelScope=scope||duelScope;var c=duelCopy(),rows=DUEL_BOARD[duelScope],html='';rows.forEach(function(person,index){var mine=person[0]==='You',value=duelMetric==='elo'?(mine?duelElo:person[3]):(mine?gems:person[2]),rank=index+1;html+='<div class="lb-row'+(mine?' me':'')+'"><div class="lb-rank'+(rank<4?' r'+rank:'')+'">'+rank+'</div><div class="lb-avatar" style="background:'+person[4]+';">'+person[1]+'</div><div class="lb-name">'+(mine?c.you:person[0])+'</div><div class="lb-pts">'+(duelMetric==='elo'?'⚔ ':'💎 ')+value.toLocaleString()+'</div></div>';});document.querySelector('#screen-board .lb-list').innerHTML=html;}
+document.querySelectorAll('.board-mode').forEach(function(button){button.addEventListener('click',function(){duelMetric=button.dataset.boardMode;document.querySelectorAll('.board-mode').forEach(function(b){b.classList.toggle('active',b===button);});renderLeaderboard(duelScope);});});
+if(localStorage.getItem('avanza-daily')===today&&!hadStoredGems&&!localStorage.getItem('avanza-daily-reconciled')){addGems(25);localStorage.setItem('avanza-daily-reconciled',today);}
+var duelLanguageSet=setAppLanguage;setAppLanguage=function(next){duelLanguageSet(next);renderDuelLanguage();renderLeaderboard(duelScope);};
+finishDuel=function(){if(!duelState)return;clearDuelTimers();var c=duelCopy(),won=duelState.enemyHp<=0||(duelState.youHp>0&&duelState.youWrong<duelState.enemyWrong),tied=duelState.youHp>0&&duelState.enemyHp>0&&duelState.youWrong===duelState.enemyWrong,gain=0,youWrong=duelState.youWrong,enemyWrong=duelState.enemyWrong;if(won){gain=18+Math.max(0,enemyWrong-youWrong)*3;duelElo+=gain;localStorage.setItem('avanza-duel-elo',duelElo);duelPets().forEach(function(id){petState.levels[id]=(petState.levels[id]||1)+1;});savePetState();renderCollection();}duelState=null;renderDuelLanguage();document.getElementById('duelQuestionTitle').textContent=won?(appLang==='es'?'Victoria de duelo!':'Duel victory!'):(tied?(appLang==='es'?'Empate':'Draw'):(appLang==='es'?'El oponente gana':'Opponent wins'));document.getElementById('duelQuestion').textContent=(appLang==='es'?'Errores: tu '+youWrong+' · oponente '+enemyWrong:'Mistakes: you '+youWrong+' · opponent '+enemyWrong);document.getElementById('duelFeedback').textContent=won?(c.win+gain+' ELO · +1 '+(appLang==='es'?'nivel para tu equipo activo.':'level for your active squad.')):(tied?c.tie:c.lose);document.getElementById('duelStart').textContent=c.again;renderLeaderboard(duelScope);};
+var baseDuelLanguage=renderDuelLanguage;renderDuelLanguage=function(){baseDuelLanguage();document.getElementById('duelOpponent').textContent=appLang==='es'?'Bot de practica':'Practice Bot';document.getElementById('duelOpponentElo').textContent='1,020 ELO';};
+var baseResolvePlayer=resolvePlayer;resolvePlayer=function(answer,timedOut){var wasSlower=duelState&&duelState.aiDone,correct=duelState&&answer===duelCopy().questions[duelState.index][2];if(duelState)duelState.playerCorrect=correct;baseResolvePlayer(answer,timedOut);if(wasSlower&&duelState){duelState.youHp=Math.max(0,duelState.youHp-4);setDuelHealth();document.getElementById('duelFeedback').textContent+=(appLang==='es'?' El bot respondio primero: -4 energia.':' Bot answered first: -4 energy.');}};var baseResolveOpponent=resolveOpponent;resolveOpponent=function(){var playerWasFaster=duelState&&duelState.playerDone&&duelState.playerCorrect;baseResolveOpponent();if(playerWasFaster&&duelState){duelState.enemyHp=Math.max(0,duelState.enemyHp-4);setDuelHealth();}};
+/* One guarded path keeps the startup language choice from being blocked by any optional screen renderer. */
+UI_COPY.en.nav=['Learn','Ranks','Duels','Pets','More'];UI_COPY.es.nav=['Aprender','Rangos','Duelos','Mascotas','Más'];
+DUEL_COPY.en.nav=['Learn','Ranks','Duels','Pets','More'];DUEL_COPY.es.nav=['Aprender','Rangos','Duelos','Mascotas','Más'];
+function renderLoginBonus(){
+  var bonus=document.getElementById('loginBonus');
+  if(!bonus)return;
+  var claimed=localStorage.getItem('avanza-daily')===today;
+  bonus.hidden=claimed;
+  bonus.disabled=claimed;
+  bonus.classList.remove('claimed');
+  bonus.textContent=appLang==='es'?'🎁 Reclama 25 gemas de inicio':'🎁 Claim today’s 25 gem login bonus';
+}
+document.getElementById('loginBonus').addEventListener('click',function(){
+  var bonus=this;
+  if(localStorage.getItem('avanza-daily')===today)return;
+  addGems(25);
+  localStorage.setItem('avanza-daily',today);
+  bonus.disabled=true;
+  bonus.classList.add('claimed');
+  bonus.textContent=appLang==='es'?'✓ ¡25 gemas añadidas!':'✓ 25 gems added!';
+  showToast(appLang==='es'?'🎁 +25 gemas!':'🎁 +25 gems!');
+  setTimeout(function(){bonus.hidden=true;},1300);
+});
+/* The former modal renderer now only keeps the compact login bonus in sync. */
+renderDailyReward=renderLoginBonus;
+function applyLanguageEverywhere(next){appLang=next;homeLang=next;if(typeof lang!=='undefined')lang=next;localStorage.setItem('avanza-language',next);[renderUniversalLanguage,renderHomeLanguage,renderNewFeatureLanguage,renderDailyReward,renderCollection,renderDuelLanguage].forEach(function(render){try{render();}catch(error){console.warn('Language render skipped',error);}});try{renderLeaderboard(duelScope);}catch(error){}try{cleanFeatureEntities();}catch(error){}}
+setAppLanguage=applyLanguageEverywhere;
+window.chooseAvanzaLanguage=function(next){applyLanguageEverywhere(next);document.getElementById('onboard').classList.add('hide');renderLoginBonus();};
+/* Placeholder leaderboard data for every available ranking view. */
+var LEADERBOARD_PLACEHOLDERS={
+  friends:{
+    gems:[['Marisol R.','🦊',1240,'#FFE1CC'],['Diego P.','🐨',1035,'#DCE9FA'],['Yamilet C.','🐸',890,'#E3F3D9'],['You','🐰',0,'#F3E3FB'],['Kevin T.','🐯',740,'#FFF1CC']],
+    elo:[['Marisol R.','🦊',1188,'#FFE1CC'],['Diego P.','🐨',1140,'#DCE9FA'],['Yamilet C.','🐸',1104,'#E3F3D9'],['You','🐰',0,'#F3E3FB'],['Kevin T.','🐯',1061,'#FFF1CC']]
+  },
+  global:{
+    gems:[['Aisha M.','👑',128490,'#FCE9D6'],['Luna C.','🌟',123780,'#F5E4FC'],['Mateo R.','🦝',119860,'#E3F3D9'],['Camila V.','🐉',115425,'#DCE9FA'],['Noah G.','🦅',111900,'#FFF1C8'],['You','🐰',0,'#F3E3FB']],
+    elo:[['Aisha M.','👑',1842,'#FCE9D6'],['Luna C.','🌟',1794,'#F5E4FC'],['Mateo R.','🦝',1760,'#E3F3D9'],['Camila V.','🐉',1720,'#DCE9FA'],['Noah G.','🦅',1694,'#FFF1C8'],['You','🐰',0,'#F3E3FB']]
+  }
+};
+renderLeaderboard=function(scope){
+  duelScope=scope||duelScope||'friends';
+  var metric=duelMetric==='elo'?'elo':'gems',rows=LEADERBOARD_PLACEHOLDERS[duelScope][metric],copy=duelCopy(),html='';
+  rows.forEach(function(person,index){
+    var mine=person[0]==='You',value=mine?(metric==='elo'?duelElo:gems):person[2],rank=index+1;
+    html+='<div class="lb-row'+(mine?' me':'')+'"><div class="lb-rank'+(rank<4?' r'+rank:'')+'">'+rank+'</div><div class="lb-avatar" style="background:'+person[3]+';">'+person[1]+'</div><div class="lb-name">'+(mine?copy.you:person[0])+'</div><div class="lb-pts">'+(metric==='elo'?'⚔ ':'💎 ')+value.toLocaleString()+'</div></div>';
+  });
+  document.querySelector('#screen-board .lb-list').innerHTML=html;
+};
+document.querySelectorAll('[data-onboard]').forEach(function(button){button.addEventListener('click',function(event){event.preventDefault();event.stopImmediatePropagation();window.chooseAvanzaLanguage(button.dataset.onboard);},true);});
+startBlink();
+renderUniversalLanguage();
+renderLoginBonus();
+renderDuelLanguage();
+renderLeaderboard('friends');
+/* Final, single source of truth for the navigation and interactive controls. */
+(function installReliableControls(){
+  var navLabels=appLang==='es'?['Aprender','Rangos','Duelos','Mascotas','Más']:['Learn','Ranks','Duels','Pets','More'];
+  var navIcons=['🏠','🏆','⚔️','🥚','⋯'];
+  document.querySelectorAll('.navbtn').forEach(function(button,index){
+    button.innerHTML='<span class="icon">'+navIcons[index]+'</span>'+navLabels[index];
+    button.onclick=function(){
+      document.querySelectorAll('.screen').forEach(function(screen){screen.classList.toggle('active',screen.id===button.dataset.screen);});
+      document.querySelectorAll('.navbtn').forEach(function(nav){nav.classList.toggle('active',nav===button);});
+    };
+  });
+  document.querySelectorAll('#screen-board .lb-tab').forEach(function(tab,index){
+    tab.onclick=function(){
+      document.querySelectorAll('#screen-board .lb-tab').forEach(function(other){other.classList.toggle('active',other===tab);});
+      renderLeaderboard(index===1?'global':'friends');
+    };
+  });
+  document.querySelectorAll('.board-mode').forEach(function(button){
+    button.onclick=function(){
+      duelMetric=button.dataset.boardMode;
+      document.querySelectorAll('.board-mode').forEach(function(other){other.classList.toggle('active',other===button);});
+      renderLeaderboard(duelScope);
+    };
+  });
+  document.getElementById('premiumBtn').onclick=function(){
+    var spanish=appLang==='es',free=spanish?'Gratis':'Free',premium='Premium';
+    showFeature('⭐',free+' vs '+premium,'');
+    document.getElementById('featureText').innerHTML='<div class="premium-compare"><div><b>'+free+'</b><p>'+ (spanish?'Lecciones diarias':'Daily lessons') +'</p><p>'+ (spanish?'Sin anuncios':'No ads') +'</p><p>'+ (spanish?'Gemas diarias extra':'Extra daily gems') +'</p></div><div><b>'+premium+'</b><p>'+ (spanish?'Sin anuncios':'No ads') +'</p><p>'+ (spanish?'Gemas diarias extra':'Extra daily gems') +'</p><p>'+ (spanish?'Protección de racha + mascota mensual':'Streak protection + monthly pet') +'</p></div></div>';
+  };
+})();
+})();
+</script>
+<script>
+/*
+  Daily login controller
+  ----------------------
+  This module is deliberately independent from the optional pet, lesson, and
+  leaderboard renderers. It is the only code allowed to grant this reward.
+*/
+(function(){
+  var migrationKey='avanza-daily-login-controller-version';
+  var stateKey='avanza-daily-login-controller-state';
+  var migrationVersion='v4';
+  var today=new Date().toISOString().slice(0,10);
+  var button=document.getElementById('loginBonus');
+  if(!button)return;
+
+  function readState(){
+    try{return JSON.parse(localStorage.getItem(stateKey)||'{"claimedOn":null}');}
+    catch(error){return {claimedOn:null};}
+  }
+  function writeState(state){localStorage.setItem(stateKey,JSON.stringify(state));}
+  function language(){return localStorage.getItem('avanza-language')||'es';}
+  function setBalance(value){
+    if(typeof window.__avanzaSetGemBalance==='function')return window.__avanzaSetGemBalance(value);
+    value=Math.max(0,Math.round(Number(value)||0));
+    localStorage.setItem('avanza-gems',value);
+    var stat=document.getElementById('gemStat');if(stat)stat.textContent='💎 '+value;
+    return value;
+  }
+  function toast(message){
+    var el=document.getElementById('demoToast');
+    if(!el)return;
+    el.textContent=message;el.classList.add('show');clearTimeout(el._timer);
+    el._timer=setTimeout(function(){el.classList.remove('show');},2200);
+  }
+  function ensureDailyBaseline(){
+    var state=readState();
+    if(state.claimedOn!==today){
+      setBalance(500);
+      writeState(state);
+    }
+    return state;
+  }
+  function render(){
+    var claimed=ensureDailyBaseline().claimedOn===today,spanish=language()==='es';
+    button.hidden=claimed;
+    button.disabled=claimed;
+    button.classList.remove('claimed');
+    button.textContent=spanish?'🎁 Reclama 25 gemas de inicio':'🎁 Claim today’s 25 gem login bonus';
+  }
+
+  /* One-time repair, then a deterministic 500-gem baseline before each daily claim. */
+  if(localStorage.getItem(migrationKey)!==migrationVersion){
+    setBalance(500);
+    writeState({claimedOn:null});
+    localStorage.removeItem('avanza-daily');
+    localStorage.removeItem('avanza-daily-reconciled');
+    localStorage.setItem(migrationKey,migrationVersion);
+  }
+
+  button.addEventListener('click',function(event){
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    var state=ensureDailyBaseline();
+    if(state.claimedOn===today){render();return;}
+    state.claimedOn=today;
+    writeState(state);
+    /* Gate the old hidden implementation too, without letting it award gems. */
+    localStorage.setItem('avanza-daily',new Date().toDateString());
+    setBalance(Number(localStorage.getItem('avanza-gems')||500)+25);
+    button.disabled=true;
+    button.classList.add('claimed');
+    button.textContent=language()==='es'?'✓ ¡25 gemas añadidas!':'✓ 25 gems added!';
+    toast(language()==='es'?'🎁 +25 gemas!':'🎁 +25 gems!');
+    setTimeout(function(){button.hidden=true;},1300);
+  },true);
+  render();
+})();
+
+/* Stable language layer for the visible settings and Premium surfaces. */
+(function(){
+  var copy={
+    en:{settingsTitle:'Profile',settingsSub:'Manage your account and preferences',stats:'Learning stats',unit:'Unit 1',premium:'Avanza Premium',premiumSub:'Make every learning day a little brighter.',perks:['🚫 No ads, ever','💎 Extra daily gems','🧠 Improved learning paths','🛡️ Streak protection + monthly pet'],explore:'Explore Premium',gems:'💎 Gem packs',gemsSub:'Top up gems to unlock more chests.',packs:['Pocket','Stash','Treasure'],bonus:'🎁 Claim today’s 25 gem login bonus',nav:['Learn','Ranks','Duels','Pets','More']},
+    es:{settingsTitle:'Perfil',settingsSub:'Administra tu cuenta y preferencias',stats:'Estadísticas de aprendizaje',unit:'Unidad 1',premium:'Avanza Premium',premiumSub:'Haz que cada día de aprendizaje sea mejor.',perks:['🚫 Sin anuncios','💎 Gemas diarias extra','🧠 Rutas de aprendizaje mejoradas','🛡️ Protección de racha + mascota mensual'],explore:'Explorar Premium',gems:'💎 Paquetes de gemas',gemsSub:'Consigue gemas para abrir más mascotas.',packs:['Bolsillo','Reserva','Tesoro'],bonus:'🎁 Reclama 25 gemas de inicio',nav:['Aprender','Rangos','Duelos','Mascotas','Más']}
+  };
+  function lang(){return localStorage.getItem('avanza-language')||'es';}
+  function setText(selector,text){var el=document.querySelector(selector);if(el)el.textContent=text;}
+  function apply(){
+    var c=copy[lang()]||copy.es;
+    setText('#screen-settings .screen-head h1',c.settingsTitle);setText('#screen-settings .screen-head p',c.settingsSub);
+    setText('#learningStatsRow .label',c.stats);setText('#learningStatsRow .val',c.unit);
+    setText('.plan-card>b','⭐ '+c.premium);setText('.plan-card>p',c.premiumSub);setText('#premiumBtn',c.explore);
+    document.querySelectorAll('.premium-perks span').forEach(function(item,index){item.textContent=c.perks[index]||item.textContent;});
+    setText('#gemStore>b',c.gems);setText('#gemStore>p',c.gemsSub);
+    document.querySelectorAll('.gem-pack-name').forEach(function(item,index){item.textContent=c.packs[index]||item.textContent;});
+    var bonus=document.getElementById('loginBonus');if(bonus&&!bonus.hidden)bonus.textContent=c.bonus;
+    var pill=document.getElementById('homeLangPill');if(pill){pill.textContent='🌐 '+(lang()==='es'?'ES':'EN');}
+    var icons=['🏠','🏆','⚔️','🥚','⋯'];document.querySelectorAll('.navbtn').forEach(function(button,index){if(index<5)button.innerHTML='<span class="icon">'+icons[index]+'</span>'+c.nav[index];});
+  }
+  function choose(next){localStorage.setItem('avanza-language',next);var onboarding=document.getElementById('onboard');if(onboarding)onboarding.classList.add('hide');if(window.__avanzaApplyLanguage)window.__avanzaApplyLanguage();else apply();}
+  document.querySelectorAll('[data-onboard]').forEach(function(button){button.addEventListener('click',function(){setTimeout(function(){if(window.__avanzaApplyLanguage)window.__avanzaApplyLanguage();},0);});});
+  ['homeLangPill','langPill'].forEach(function(id){var button=document.getElementById(id);if(button)button.addEventListener('click',function(){setTimeout(function(){if(window.__avanzaApplyLanguage)window.__avanzaApplyLanguage();},0);});});
+  apply();
+})();
+
+/* Complete static-language renderer. Lesson questions retain their own live renderer. */
+(function(){
+  var copy={
+    en:{
+      onboarding:'Choose your language',home:['UNIT 1','Credit Basics','Use real terms, build confidence','Daily goal','2 / 3 lessons','🔥 4-day streak','67% complete','START','Keep your streak going! 🔥 Every lesson brings you closer to financial freedom.','Learn by playing · <b>Move forward</b> for real'],
+      squad:['Active squad','Equip up to 3 pets for bonuses'],board:['Leaderboard','See how you stack up this week','Friends','Build your learning squad','＋ Add friend','Friends','Global','💎 Gems','⚔ Duel ELO'],
+      duel:['Knowledge Duel','Race through financial questions with your active squad.','Your duel rating','You','Active squad','Practice Bot','START DUEL'],
+      pets:['Pets','Open eggs to collect plushie friends',['Lesson Chest','Streak Chest','Gem Chest','Mystery Chest'],['Ready to open','7-day reward','Needs 750 gems','Complete Unit 2'],['FREE','FREE','💎 750','UNIT 2'],'Trade pets','Coming soon','Your Collection'],
+      settings:['Profile','Manage your account and preferences',['Language','Daily reminders','Sound effects','Daily goal','Learning stats','Log out'],['English','','','5 min/day','Unit 1','']],
+      premium:['Avanza Premium','Make every learning day a little brighter.',['🚫 No ads, ever','💎 Extra daily gems','🧠 Improved learning paths','🛡️ Streak protection + monthly pet'],'Explore Premium','💎 Gem packs','Top up gems to unlock more chests.',['Pocket','Stash','Treasure']],
+      nav:['Learn','Ranks','Duels','Pets','More'],bonus:'🎁 Claim today’s 25 gem login bonus',close:'Close',okay:'Got it!',nice:'Nice!'
+    },
+    es:{
+      onboarding:'Elige tu idioma',home:['UNIDAD 1','Lo básico del crédito','Usa términos reales, gana confianza','Meta diaria','2 / 3 lecciones','🔥 racha de 4 días','67% completado','INICIAR','¡Sigue tu racha! 🔥 Cada lección te acerca a tu libertad financiera.','Aprende jugando · <b>Avanza</b> de verdad'],
+      squad:['Equipo activo','Equipa hasta 3 mascotas para obtener bonificaciones'],board:['Clasificación','Mira cómo vas esta semana','Amigos','Crea tu equipo de aprendizaje','＋ Agregar amigo','Amigos','Global','💎 Gemas','⚔ ELO de duelo'],
+      duel:['Duelo de conocimientos','Responde preguntas financieras con tu equipo activo.','Tu clasificación de duelo','Tú','Equipo activo','Bot de práctica','INICIAR DUELO'],
+      pets:['Mascotas','Abre huevos para coleccionar amigos de peluche',['Cofre de lección','Cofre de racha','Cofre de gemas','Cofre misterioso'],['Listo para abrir','Recompensa de 7 días','Necesita 750 gemas','Completa la Unidad 2'],['GRATIS','GRATIS','💎 750','UNIDAD 2'],'Intercambiar mascotas','Próximamente','Tu colección'],
+      settings:['Perfil','Administra tu cuenta y preferencias',['Idioma','Recordatorios diarios','Efectos de sonido','Meta diaria','Estadísticas de aprendizaje','Cerrar sesión'],['Español','','','5 min/día','Unidad 1','']],
+      premium:['Avanza Premium','Haz que cada día de aprendizaje sea mejor.',['🚫 Sin anuncios','💎 Gemas diarias extra','🧠 Rutas de aprendizaje mejoradas','🛡️ Protección de racha + mascota mensual'],'Explorar Premium','💎 Paquetes de gemas','Consigue gemas para abrir más mascotas.',['Bolsillo','Reserva','Tesoro']],
+      nav:['Aprender','Rangos','Duelos','Mascotas','Más'],bonus:'🎁 Reclama 25 gemas de inicio',close:'Cerrar',okay:'Entendido',nice:'¡Genial!'
+    }
+  };
+  function q(selector){return document.querySelector(selector);}
+  function qa(selector){return document.querySelectorAll(selector);}
+  function text(selector,value){var el=q(selector);if(el)el.textContent=value;}
+  function apply(){
+    var lang=localStorage.getItem('avanza-language')||'es',c=copy[lang]||copy.es;
+    text('.onboard-card p',c.onboarding);
+    ['#homeUnit','#homeTitle','#homeSub','#goalLabel','#goalVal','#goalStreak','#goalPercent','#startLabel','#homeCoach'].forEach(function(selector,index){text(selector,c.home[index]);});
+    var slogan=q('#homeSlogan');if(slogan)slogan.innerHTML=c.home[9];
+    text('.squad-card b',c.squad[0]);text('.squad-card small',c.squad[1]);
+    text('#screen-board .screen-head h1',c.board[0]);text('#screen-board .screen-head p',c.board[1]);text('.social-bar b',c.board[2]);text('.social-bar small',c.board[3]);text('#addFriendBtn',c.board[4]);
+    qa('#screen-board .lb-tab').forEach(function(el,index){el.textContent=c.board[5+index];});qa('.board-mode').forEach(function(el,index){el.textContent=c.board[7+index];});
+    text('#duelTitle',c.duel[0]);text('#duelSub',c.duel[1]);text('#duelRankSub',c.duel[2]);text('#duelYou',c.duel[3]);text('#duelSquadLabel',c.duel[4]);text('#duelOpponent',c.duel[5]);
+    if(q('#duelChoices')&&!q('#duelChoices').children.length)text('#duelStart',c.duel[6]);
+    text('#screen-chests .screen-head h1',c.pets[0]);text('#screen-chests .screen-head p',c.pets[1]);qa('.chest-title').forEach(function(el,index){el.textContent=c.pets[2][index];});qa('.chest-sub').forEach(function(el,index){el.textContent=c.pets[3][index];});qa('.chest-req').forEach(function(el,index){el.textContent=c.pets[4][index];});
+    var trade=q('#tradeBtn');if(trade){trade.childNodes[0].nodeValue='🔄 '+c.pets[5]+' ';text('#tradeBtn span',c.pets[6]);}text('.collection-title',c.pets[7]);
+    text('#screen-settings .screen-head h1',c.settings[0]);text('#screen-settings .screen-head p',c.settings[1]);qa('#screen-settings .settings-row').forEach(function(row,index){text('#screen-settings .settings-row:nth-child('+(index+1)+') .label',c.settings[2][index]);var value=row.querySelector('.val');if(value&&c.settings[3][index])value.textContent=c.settings[3][index];});
+    text('.plan-card>b','⭐ '+c.premium[0]);text('.plan-card>p',c.premium[1]);qa('.premium-perks span').forEach(function(el,index){el.textContent=c.premium[2][index];});text('#premiumBtn',c.premium[3]);text('#gemStore>b',c.premium[4]);text('#gemStore>p',c.premium[5]);qa('.gem-pack-name').forEach(function(el,index){el.textContent=c.premium[6][index];});
+    qa('.navbtn').forEach(function(button,index){var icon=['🏠','🏆','⚔️','🥚','⋯'][index];if(index<5)button.innerHTML='<span class="icon">'+icon+'</span>'+c.nav[index];});
+    var homePill=q('#homeLangPill');if(homePill)homePill.textContent='🌐 '+(lang==='es'?'ES':'EN');var close=q('#featureClose');if(close)close.setAttribute('aria-label',c.close);text('#featureOkay',c.okay);text('#eggNice',c.nice);
+    var bonus=q('#loginBonus');if(bonus&&!bonus.hidden)bonus.textContent=c.bonus;
+  }
+  function showFeature(kind){
+    var spanish=lang()==='es',modal=q('#featureModal');
+    if(!modal)return;
+    var content=kind==='friends'
+      ? (spanish?['👫','Amigos próximamente','Crea tu equipo de aprendizaje y sube en la clasificación juntos.']:['👫','Friends are coming!','Build your learning squad and climb the rankings together.'])
+      : (spanish?['🔄','Intercambiar mascotas','Intercambia mascotas duplicadas para avanzar en tu colección. Próximamente.']:['🔄','Trade pets','Trade duplicate pets to make progress in your collection. Coming soon!']);
+    text('#featureArt',content[0]);text('#featureTitle',content[1]);text('#featureText',content[2]);modal.classList.add('show');
+  }
+  var addFriend=q('#addFriendBtn');if(addFriend)addFriend.addEventListener('click',function(event){event.preventDefault();event.stopImmediatePropagation();showFeature('friends');},true);
+  var trade=q('#tradeBtn');if(trade)trade.addEventListener('click',function(event){event.preventDefault();event.stopImmediatePropagation();showFeature('trade');},true);
+  window.__avanzaApplyLanguage=apply;
+  apply();
+})();
+
+/* Keep the Duel entry point independent from later optional renderers. */
+(function(){
+  var duelNav=document.querySelector('.navbtn[data-screen="screen-duel"]');
+  if(!duelNav)return;
+  duelNav.addEventListener('click',function(event){
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    document.querySelectorAll('.screen').forEach(function(screen){screen.classList.toggle('active',screen.id==='screen-duel');});
+    document.querySelectorAll('.navbtn').forEach(function(button){button.classList.toggle('active',button===duelNav);});
+  },true);
+})();
+
+/* Self-contained Duel controller: it owns the Start button and active squad. */
+(function(){
+  var petNames={foxy:'Foxy',bunny:'Bunny',bruno:'Bruno',mochi:'Mochi',rana:'Rana',pato:'Pato',coco:'Coco',luna:'Luna',koa:'Koa',mariposa:'Mariposa',rico:'Rico',pepe:'Pepe',lobo:'Lobo',rey:'Rey',draco:'Draco',estrella:'Estrella',aguila:'Aguila',fuego:'Fuego',sprout:'Sprout',nube:'Nube',toby:'Toby',onyx:'Onyx',sola:'Sola',mist:'Mist',nova:'Nova',titan:'Titan',aurora:'Aurora',coloso:'Coloso'};
+  var rarity={foxy:'common',bunny:'common',bruno:'common',mochi:'common',rana:'common',pato:'common',coco:'common',luna:'common',koa:'rare',mariposa:'rare',rico:'rare',pepe:'rare',lobo:'rare',rey:'epic',draco:'epic',estrella:'epic',nova:'epic',titan:'epic',aguila:'legendary',fuego:'legendary',aurora:'legendary',sprout:'common',nube:'common',toby:'common',onyx:'rare',sola:'rare',mist:'rare',coloso:'secret'};
+  var questions={
+    en:[['What is a budget?',['A spending plan','A type of debt','A credit score'],0],['What helps protect credit?',['Paying on time','Ignoring statements','Using every limit'],0],['What is an emergency fund for?',['Unexpected expenses','Every want','A new credit card'],0],['What raises borrowing cost?',['Interest rate','Paying early','A lower balance'],0],['What does a due date mean?',['When payment is expected','When a card expires','Your savings goal'],0]],
+    es:[['¿Qué es un presupuesto?',['Un plan de gastos','Un tipo de deuda','Un puntaje de crédito'],0],['¿Qué protege tu crédito?',['Pagar a tiempo','Ignorar estados de cuenta','Usar todo el límite'],0],['¿Para qué sirve un fondo de emergencia?',['Gastos inesperados','Cualquier deseo','Una tarjeta nueva'],0],['¿Qué aumenta el costo de pedir prestado?',['La tasa de interés','Pagar temprano','Un saldo menor'],0],['¿Qué indica una fecha de pago?',['Cuándo se espera el pago','Cuándo expira la tarjeta','Tu meta de ahorro'],0]]
+  };
+  var state=null,tick=null,botTimer=null;
+  function lang(){return localStorage.getItem('avanza-language')||'es';}
+  function copy(){return lang()==='es'?{start:'INICIAR DUELO',again:'JUGAR DE NUEVO',round:'Pregunta',ready:'¿Listo para el duelo?',readyText:'Tu equipo activo responde 5 preguntas financieras contra el bot de práctica.',choose:'Elige la mejor respuesta antes de que termine el tiempo.',correct:'¡Correcto! Tu equipo atacó con',wrong:'No es correcto. El bot avanzó.',timeout:'Se acabó el tiempo. El bot avanzó.',win:'¡Victoria! +',lose:'Duelo terminado. Sigue practicando.',empty:'Equipa mascotas en Colección',damage:'de daño.',result:'Errores: tú',opponent:'bot'}:{start:'START DUEL',again:'DUEL AGAIN',round:'Question',ready:'Ready to duel?',readyText:'Your active squad answers 5 financial questions against the Practice Bot.',choose:'Choose the best answer before time runs out.',correct:'Correct! Your squad dealt',wrong:'Not quite. The bot gained ground.',timeout:'Time ran out. The bot gained ground.',win:'Victory! +',lose:'Duel complete. Keep practicing.',empty:'Equip pets in Collection',damage:'damage.',result:'Mistakes: you',opponent:'bot'};}
+  function petState(){try{var saved=JSON.parse(localStorage.getItem('avanza-pets')||'{}');return {equipped:Array.isArray(saved.equipped)?saved.equipped:[],levels:saved.levels&&typeof saved.levels==='object'?saved.levels:{}};}catch(error){return {equipped:[],levels:{}};}}
+  function squad(){var saved=petState();return saved.equipped.filter(function(id){return petNames[id];}).slice(0,3);}
+  function renderSquad(){var el=document.getElementById('duelSquad'),saved=petState(),ids=squad(),c=copy();if(!el)return;if(!ids.length){el.innerHTML='<span class="duel-empty">'+c.empty+'</span>';return;}el.innerHTML=ids.map(function(id){var level=saved.levels[id]||1;return '<span class="duel-pet-chip '+(rarity[id]||'common')+'" title="'+petNames[id]+' · Lv. '+level+'"><img src="assets/pets/'+id+'.png" alt="'+petNames[id]+'"><i class="duel-pet-level">Lv. '+level+'</i></span>';}).join('');}
+  function damage(){var saved=petState(),total=8;squad().forEach(function(id){total+=(saved.levels[id]||1)*2+({common:1,rare:2,epic:3,legendary:4,secret:5}[rarity[id]]||1);});return total;}
+  function clearTimers(){clearInterval(tick);clearTimeout(botTimer);tick=null;botTimer=null;}
+  function health(){document.getElementById('duelYouHp').textContent=state.youHp;document.getElementById('duelEnemyHp').textContent=state.enemyHp;document.getElementById('duelYouBar').style.width=Math.max(0,state.youHp)+'%';document.getElementById('duelEnemyBar').style.width=Math.max(0,state.enemyHp)+'%';}
+  function landing(){var c=copy();clearTimers();state=null;renderSquad();document.getElementById('duelRound').textContent=lang()==='es'?'5 preguntas':'5 questions';document.getElementById('duelTimer').textContent='10s';document.getElementById('duelQuestionTitle').textContent=c.ready;document.getElementById('duelQuestion').textContent=c.readyText;document.getElementById('duelChoices').innerHTML='';document.getElementById('duelFeedback').textContent='';document.getElementById('duelStart').textContent=c.start;document.getElementById('duelYouHp').textContent='100';document.getElementById('duelEnemyHp').textContent='100';document.getElementById('duelYouBar').style.width='100%';document.getElementById('duelEnemyBar').style.width='100%';}
+  function start(){clearTimers();state={index:0,youHp:100,enemyHp:100,youWrong:0,botWrong:0,playerDone:false,botDone:false,seconds:10};renderSquad();round();}
+  function round(){var c=copy(),q=questions[lang()]||questions.es;if(!state||state.index>=q.length||state.youHp<=0||state.enemyHp<=0){finish();return;}var item=q[state.index];state.playerDone=false;state.botDone=false;state.seconds=10;document.getElementById('duelRound').textContent=c.round+' '+(state.index+1)+' / '+q.length;document.getElementById('duelTimer').textContent='10s';document.getElementById('duelQuestionTitle').textContent=item[0];document.getElementById('duelQuestion').textContent=c.choose;document.getElementById('duelFeedback').textContent='';document.getElementById('duelChoices').innerHTML=item[1].map(function(answer,index){return '<button class="duel-choice" data-external-answer="'+index+'">'+answer+'</button>';}).join('');health();tick=setInterval(function(){state.seconds--;document.getElementById('duelTimer').textContent=state.seconds+'s';if(state.seconds<=0){clearInterval(tick);resolvePlayer(-1,true);}},1000);botTimer=setTimeout(resolveBot,3000+Math.random()*1000);}
+  function resolvePlayer(answer,timedOut){if(!state||state.playerDone)return;var c=copy(),item=(questions[lang()]||questions.es)[state.index],right=answer===item[2];state.playerDone=true;clearInterval(tick);document.querySelectorAll('[data-external-answer]').forEach(function(button){button.disabled=true;if(+button.dataset.externalAnswer===item[2])button.classList.add('correct');if(!right&&+button.dataset.externalAnswer===answer)button.classList.add('wrong');});if(right){var hit=damage();state.enemyHp=Math.max(0,state.enemyHp-hit);document.getElementById('duelFeedback').textContent=c.correct+' '+hit+' '+c.damage;}else{state.youWrong++;state.youHp=Math.max(0,state.youHp-10);document.getElementById('duelFeedback').textContent=timedOut?c.timeout:c.wrong;}if(!state.botDone){clearTimeout(botTimer);botTimer=setTimeout(resolveBot,500);}health();advance();}
+  function resolveBot(){if(!state||state.botDone)return;state.botDone=true;if(Math.random()<.6)state.youHp=Math.max(0,state.youHp-12);else state.botWrong++;health();advance();}
+  function advance(){if(!state||!state.playerDone||!state.botDone)return;clearTimers();setTimeout(function(){if(state){state.index++;round();}},650);}
+  function finish(){if(!state)return;var c=copy(),won=state.enemyHp<=0||(state.youHp>0&&state.youWrong<state.botWrong),gain=0;if(won){gain=18+Math.max(0,state.botWrong-state.youWrong)*3;var elo=Number(localStorage.getItem('avanza-duel-elo')||1000)+gain;localStorage.setItem('avanza-duel-elo',elo);var saved=petState();squad().forEach(function(id){saved.levels[id]=(saved.levels[id]||1)+1;});localStorage.setItem('avanza-pets',JSON.stringify(saved));document.getElementById('duelElo').textContent=elo.toLocaleString();}document.getElementById('duelQuestionTitle').textContent=won?(lang()==='es'?'¡Victoria de duelo!':'Duel victory!'):(lang()==='es'?'El bot gana':'The bot wins');document.getElementById('duelQuestion').textContent=c.result+' '+state.youWrong+' · '+c.opponent+' '+state.botWrong;document.getElementById('duelFeedback').textContent=won?c.win+gain+' ELO':c.lose;document.getElementById('duelChoices').innerHTML='';document.getElementById('duelStart').textContent=c.again;clearTimers();state=null;renderSquad();}
+  var startButton=document.getElementById('duelStart');if(startButton)startButton.addEventListener('click',function(event){event.preventDefault();event.stopImmediatePropagation();start();},true);
+  var choices=document.getElementById('duelChoices');if(choices)choices.addEventListener('click',function(event){var answer=event.target.closest('[data-external-answer]');if(answer){event.stopImmediatePropagation();resolvePlayer(+answer.dataset.externalAnswer,false);}},true);
+  renderSquad();landing();
+})();
+
+/* Independent leaderboard recovery: this runs even if the main app script
+   stops in an unrelated optional renderer. */
+(function(){
+  var state={scope:'friends',metric:'gems'};
+  var data={
+    friends:{
+      gems:[['Marisol R.','🦊',1240,'#FFE1CC'],['Diego P.','🐨',1035,'#DCE9FA'],['Yamilet C.','🐸',890,'#E3F3D9'],['You','🐰',0,'#F3E3FB'],['Kevin T.','🐯',740,'#FFF1CC']],
+      elo:[['Marisol R.','🦊',1188,'#FFE1CC'],['Diego P.','🐨',1140,'#DCE9FA'],['Yamilet C.','🐸',1104,'#E3F3D9'],['You','🐰',0,'#F3E3FB'],['Kevin T.','🐯',1061,'#FFF1CC']]
+    },
+    global:{
+      gems:[['Aisha M.','👑',128490,'#FCE9D6'],['Luna C.','🌟',123780,'#F5E4FC'],['Mateo R.','🦝',119860,'#E3F3D9'],['Camila V.','🐉',115425,'#DCE9FA'],['Noah G.','🦅',111900,'#FFF1C8'],['You','🐰',0,'#F3E3FB']],
+      elo:[['Aisha M.','👑',1842,'#FCE9D6'],['Luna C.','🌟',1794,'#F5E4FC'],['Mateo R.','🦝',1760,'#E3F3D9'],['Camila V.','🐉',1720,'#DCE9FA'],['Noah G.','🦅',1694,'#FFF1C8'],['You','🐰',0,'#F3E3FB']]
+    }
+  };
+  function render(){
+    var list=document.querySelector('#screen-board .lb-list');
+    if(!list)return;
+    var lang=localStorage.getItem('avanza-language')||'en';
+    var mineLabel=lang==='es'?'Tú':'You';
+    var gems=Number(localStorage.getItem('avanza-gems')||500);
+    var elo=Number(localStorage.getItem('avanza-duel-elo')||1000);
+    var ranked=data[state.scope][state.metric].map(function(person){
+      var mine=person[0]==='You';return {person:person,mine:mine,value:mine?(state.metric==='elo'?elo:gems):person[2]};
+    }).sort(function(a,b){return b.value-a.value;});
+    list.innerHTML=ranked.map(function(row,index){
+      var person=row.person,mine=row.mine,value=row.value,rank=index+1;
+      return '<div class="lb-row'+(mine?' me':'')+'"><div class="lb-rank'+(rank<4?' r'+rank:'')+'">'+rank+'</div><div class="lb-avatar" style="background:'+person[3]+';">'+person[1]+'</div><div class="lb-name">'+(mine?mineLabel:person[0])+'</div><div class="lb-pts">'+(state.metric==='elo'?'⚔ ':'💎 ')+value.toLocaleString()+'</div></div>';
+    }).join('');
+  }
+  document.querySelectorAll('#screen-board .lb-tab').forEach(function(tab,index){
+    tab.addEventListener('click',function(event){
+      event.stopImmediatePropagation();
+      state.scope=index===1?'global':'friends';
+      document.querySelectorAll('#screen-board .lb-tab').forEach(function(item){item.classList.toggle('active',item===tab);});
+      render();
+    },true);
+  });
+  document.querySelectorAll('.board-mode').forEach(function(button){
+    button.addEventListener('click',function(event){
+      event.stopImmediatePropagation();
+      state.metric=button.dataset.boardMode==='elo'?'elo':'gems';
+      document.querySelectorAll('.board-mode').forEach(function(item){item.classList.toggle('active',item===button);});
+      render();
+    },true);
+  });
+  var premiumButton=document.getElementById('premiumBtn');
+  if(premiumButton){
+    premiumButton.addEventListener('click',function(event){
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      var spanish=(localStorage.getItem('avanza-language')||'en')==='es',modal=document.getElementById('featureModal');
+      document.getElementById('featureArt').textContent='⭐';
+      document.getElementById('featureTitle').textContent=spanish?'Avanza Premium':'Avanza Premium';
+      document.getElementById('featureText').innerHTML=spanish
+        ? '<div class="premium-compare"><div><b>Gratis</b><p>Lecciones diarias</p><p>Con anuncios</p><p>Gemas estándar</p></div><div><b>Premium</b><p>Sin anuncios</p><p>Gemas diarias extra</p><p>Protección de racha + mascota mensual</p></div></div>'
+        : '<div class="premium-compare"><div><b>Free</b><p>Daily lessons</p><p>With ads</p><p>Standard gems</p></div><div><b>Premium</b><p>No ads</p><p>Extra daily gems</p><p>Streak protection + monthly pet</p></div></div>';
+      modal.classList.add('show');
+    },true);
+  }
+  render();
+})();
+</script>
+</body>
+</html>
